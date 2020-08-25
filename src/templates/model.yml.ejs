@@ -1,0 +1,9 @@
+<% if (props.fields.length) { -%>
+fields:
+<% for (const field of props.fields) { -%>
+<% const [name, type = 'text'] = field.split(':') -%>
+  - name: <%= name %>
+    type: <%= type %>
+
+<% } -%>
+<% } -%>

@@ -1,0 +1,13 @@
+{
+  "name": "navpi",
+  "version": "1.0.0",
+  "description": "Linha de comando.",
+  "bin": {
+    "navpi": "bin/navpi"
+  },
+  "scripts": {},
+  "license": "ISC",
+  "dependencies": {
+    "gluegun": "latest"
+  }
+}

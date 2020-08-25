@@ -1,0 +1,10 @@
+# Project
+dist
+build
+
+# Node
+node_modules
+npm-debug.log
+
+# Others
+.DS_Store
