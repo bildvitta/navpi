@@ -42,7 +42,7 @@ module.exports = {
         const url = `http://localhost:${port}`
 
         breakLine()
-        print.info(`🌐 ${url}`)
+        print.info(`🚀 ${url}`)
         breakLine()
       })
     } catch (error) {

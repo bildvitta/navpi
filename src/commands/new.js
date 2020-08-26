@@ -1,10 +1,18 @@
 module.exports = {
   name: 'new',
   alias: ['n', 'create'],
-  description: 'Creates a new naVpi application.',
+  description: 'Creates a new naVpi application',
 
   run: async toolbox => {
-    const { filesystem, meta, parameters, print, prompt } = toolbox
+    const {
+      filesystem,
+      meta,
+      parameters,
+      print,
+      prompt,
+      template
+    } = toolbox
+
     const [name] = parameters.array
 
     function breakLine () {
@@ -32,9 +40,17 @@ module.exports = {
     }
 
     // Create the directory.
-    filesystem.dir(name)
+    filesystem.dir(name).dir('models').append('.keep', '')
+    
+    // Add files.
+    // TODO: path e database.
+    const files = ['.gitignore', '.navpirc.js', 'readme.md']
 
-    // TODO: adicionar outros arquivos estruturais, por hora só está criando a pasta.
+    for (const file of files) {
+      template.generate({
+        template: `${file}.ejs`, target: `${name}/${file}`, props: { name }
+      })
+    }
 
     // Done!
     breakLine()

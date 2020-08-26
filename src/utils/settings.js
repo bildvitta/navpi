@@ -1,5 +1,9 @@
 const defaults = {
-  database: {},
+  database: {
+    dialect: 'sqlite',
+    storage: 'database.sqlite'
+  },
+
   seeder: {},
 
   server: {

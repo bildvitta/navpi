@@ -1,4 +1,4 @@
-# <%= props.name %>
+# api
 
 A **naVpi** application.
 
