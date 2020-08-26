@@ -9,6 +9,7 @@ module.exports = {
 
   run: async toolbox => {
     const {
+      parameters: { options },
       print
     } = toolbox
 
@@ -31,19 +32,21 @@ module.exports = {
     routesSpinner.succeed('Successfully registered routes.')
 
     const serverSpinner = print.spin('Launching application...')
+
     const settings = getSettings(toolbox)
+    const port = options.port || options.p || settings.server.port
 
     try {
-      server.listen(settings.server.port, () => {
+      server.listen(port, () => {
         serverSpinner.succeed('Application has been launched.')
-        const url = `http://localhost:${settings.server.port}`
+        const url = `http://localhost:${port}`
 
         breakLine()
         print.info(`🌐 ${url}`)
         breakLine()
       })
     } catch (error) {
-      spinner.fail('Error launching application.')
+      serverSpinner.fail('Error launching application.')
     }
   }
 }
