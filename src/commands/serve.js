@@ -9,9 +9,7 @@ module.exports = {
 
   run: async toolbox => {
     const {
-      config,
-      print,
-      runtime
+      print
     } = toolbox
 
     function breakLine () {
