@@ -1,6 +1,6 @@
 module.exports = {
-  name: 'serve',
-  alias: ['m', 'migrate'],
+  name: 'db:migrate',
+  alias: ['db:m'],
 
   run: async toolbox => {
     // Ler os arquivos de models.

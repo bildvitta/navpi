@@ -17,7 +17,13 @@ module.exports = {
   alias: ['g', 'gen'],
 
   run: async toolbox => {
-    const { parameters, print, template } = toolbox
+    const {
+      parameters,
+      print,
+      template
+    } = toolbox
+
+    // TODO: verificar existencia de um arquivo com o mesmo nome (mesmo que em outro formato e questionar sobre sua substituição.)
 
     const [type, name, ...fields] = parameters.array.map(
       item => item.toLowerCase()
