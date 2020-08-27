@@ -1,0 +1,6 @@
+fields:
+  - name: name
+    type: radio
+  - name: time
+    type: time
+

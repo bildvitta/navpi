@@ -11,6 +11,8 @@
     "express": "^4.17.1",
     "gluegun": "latest",
     "reflect-metadata": "^0.1.13",
-    "typeorm": "^0.2.25"
+    "sqlite3": "^5.0.0",
+    "typeorm": "^0.2.25",
+    "yaml": "^1.10.0"
   }
 }
