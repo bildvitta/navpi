@@ -4,115 +4,50 @@ module.exports = {
 
   run: async toolbox => {
     const {
-      filesystem,
-      print: { error }
+      parameters: { options },
+      print
     } = toolbox
 
-    const path = filesystem.path('models') + '/'
-    const tree = filesystem.inspectTree(path)
+    const {
+      loadModels,
+      getEntityByModelName,
+      models
+    } = require('../utils/models')
 
-    if (!tree) { return error('Can not find path models') }
+    const modelsSpinner = print.spin('Loading models...')
 
-    const YAML = require('yaml')
-    const types = ['yml', 'json']
-    const files = {}
+    try {
+      loadModels(toolbox)
+      modelsSpinner.succeed('Models loaded.')
+    } catch (error) {
+      modelsSpinner.fail('Error loading models.')
+    }
 
     const typeorm = require('typeorm')
     const EntitySchema = typeorm.EntitySchema
+
+    const entities = Object.keys(models).map(
+      model => new EntitySchema(getEntityByModelName(model))
+    )
+
     const { getSettings } = require('../utils/settings')
+    const settings = getSettings(toolbox)
 
-    const typeORMConvert = {
-      boolean: 'boolean',
-      checkbox: 'varchar',
-      color: 'varchar',
-      date: 'date',
-      datetime: 'datetime',
-      decimal: 'decimal',
-      editor: 'text',
-      money: 'decimal',
-      number: 'int',
-      percent: 'decimal',
-      radio: 'varchar',
-      select: 'varchar',
-      text: 'varchar',
-      textarea: 'text',
-      time: 'varchar',
-      upload: 'varchar'
-    }
+    const syncSpinner = print.spin('Synchronizing...')
 
-    tree.children.filter(({ name }) => {
-      return types.includes(name.split('.')[1])
-    }).forEach(({ name }) => {
-      const key = name.split('.')[0]
-      const object = filesystem.read(path + name)
-      files[key] = name.includes('.yml') ? YAML.parse(object) : JSON.parse(object)
-    })
+    try {
+      await typeorm.createConnection({
+        ...settings.database,
 
-    for (const key in files) {
-      files[key].fields = files[key].fields.map(file => {
-        file.type = typeORMConvert[file.type]
-
-        return file
+        dropSchema: options.reset || options.r,
+        synchronize: true,
+  
+        entities
       })
+
+      syncSpinner.succeed('Synchronized.')
+    } catch (error) {
+      syncSpinner.fail('Synchronization error.')
     }
-
-    const entities = toEntity(files)
-
-    function toEntity (files) {
-      const list = []
-
-      for (const key in files) {
-        const entity = {}
-        entity.name = key.charAt(0).toUpperCase() + key.slice(1)
-
-        files[key].fields.forEach((item, index) => {
-          const { name, ...rest } = item
-
-          entity.columns = {
-            ...entity.columns,
-            [name]: { ...rest }
-          }
-
-          if (!index) {
-            entity.columns.name.primary = true
-            entity.columns.name.generated = true
-          }
-        })
-
-        list.push(new EntitySchema(entity))
-      }
-
-      return list
-    }
-
-
-    // console.log(entities)
-    // entities[0].columns.name.primary = true
-    // const test = entities[0]
-    // console.log(test)
-
-    typeorm.createConnection({
-      // ...getSettings(toolbox),
-      type: 'sqlite',
-      host: 'localhost',
-      port: 5050,
-      username: 'test',
-      password: 'test',
-      database: 'test',
-      synchronize: true,
-
-      entities: [
-          // new EntitySchema(test)
-        ...entities
-      ]
-    }).then(connection => console.log(connection))
-
-    // for (const key in files) {  }
-    // console.log(files)
-    // Ler os arquivos de models.
-    // Converter cada model em entidade do TypeORM (https://github.com/typeorm/javascript-example/blob/master/src/app2-es5-json-schemas/entity/post.json). Não precisa ser em JSON, pode ser objetivo do javascript mesmo.
-    // usar o typeorm.createConnection e passar objeto dentro do EntitySchema
-
-    // TODO: apagar o banco quando a opção --reset for passada.
   }
 }
