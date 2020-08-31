@@ -19,8 +19,8 @@ function getSettings (toolbox) {
 
   try {
     return {
-      ...loadConfig(brand, process.cwd()),
-      ...defaults
+      ...defaults,
+      ...loadConfig(brand, process.cwd())
     }
   } catch (error) {
     return defaults

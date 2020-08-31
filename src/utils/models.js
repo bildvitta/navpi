@@ -15,12 +15,14 @@ function getEntityByModelName (name) {
   const columns = {
     uuid: { generated: 'uuid', primary: true, type: 'varchar' }
   }
-
+  
   for (const field of fields) {
     columns[field.name] = {
       type: getDatabaseTypeByField(field.type)
     }
   }
+  
+    // console.log(columns)
 
   return {
     name,

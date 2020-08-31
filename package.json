@@ -9,7 +9,9 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "faker": "^5.1.0",
     "gluegun": "latest",
+    "lodash": "^4.17.20",
     "reflect-metadata": "^0.1.13",
     "sqlite3": "^5.0.0",
     "typeorm": "^0.2.25",
