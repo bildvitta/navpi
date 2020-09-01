@@ -21,8 +21,7 @@ function getEntityByModelName (name) {
       type: getDatabaseTypeByField(field.type)
     }
   }
-  
-    // console.log(columns)
+
 
   return {
     name,

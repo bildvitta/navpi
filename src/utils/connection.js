@@ -42,7 +42,7 @@ async function createConnection (toolbox) {
     })
 
     syncSpinner.succeed('Synchronized.')
-    return Promise.resolve({ connection, models })
+    return Promise.resolve({ connection, models, getEntityByModelName })
   } catch (error) {
     syncSpinner.fail('Synchronization error.')
     return Promise.reject(error)

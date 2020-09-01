@@ -36,6 +36,21 @@ module.exports = {
     const settings = getSettings(toolbox)
     const port = options.port || options.p || settings.server.port
 
+    // actions
+    const CreateActions = require('../utils/actions/createActions')
+    const { loadModels, models, getEntityByModelName } = require('../utils/models')
+    const createConnection = require('../utils/connection')
+
+    loadModels(toolbox)
+    const actions = new CreateActions(server)
+
+    createConnection(toolbox).then(() => {
+      Object.keys(models).forEach(model => {
+        actions.fetchById(getEntityByModelName(model))
+        actions.fetchList(getEntityByModelName(model))
+      })
+    })
+
     try {
       server.listen(port, () => {
         serverSpinner.succeed('Application has been launched.')
