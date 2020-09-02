@@ -39,15 +39,19 @@ module.exports = {
     // actions
     const CreateActions = require('../utils/actions/createActions')
     const { loadModels, models, getEntityByModelName } = require('../utils/models')
-    const createConnection = require('../utils/connection')
 
+    const createConnection = require('../utils/connection')
+    
     loadModels(toolbox)
-    const actions = new CreateActions(server)
+    const actions = new CreateActions(server, models)
 
     createConnection(toolbox).then(() => {
       Object.keys(models).forEach(model => {
         actions.fetchById(getEntityByModelName(model))
         actions.fetchList(getEntityByModelName(model))
+        actions.create(getEntityByModelName(model))
+        actions.update(getEntityByModelName(model))
+        actions.destroy(getEntityByModelName(model))
       })
     })
 

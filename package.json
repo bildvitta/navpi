@@ -5,7 +5,9 @@
   "bin": {
     "navpi": "bin/navpi"
   },
-  "scripts": {},
+  "scripts": {
+    "start": "nodemon src/utils/actions/createActions.js"
+  },
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
@@ -16,5 +18,8 @@
     "sqlite3": "^5.0.0",
     "typeorm": "^0.2.25",
     "yaml": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }

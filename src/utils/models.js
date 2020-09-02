@@ -22,7 +22,6 @@ function getEntityByModelName (name) {
     }
   }
 
-
   return {
     name,
     columns
@@ -35,7 +34,7 @@ function loadModels ({ filesystem }) {
 
   try {
     files = filesystem.find(modelsDirectory, {
-      matching: ['*.json', '*.yaml', '*.yml']
+      matching: ['*.json', '*.yaml', '*.yml', '*.js']
     })
   } catch (error) {
     throw new Error('Can not find models path.')
@@ -52,7 +51,7 @@ function loadModels ({ filesystem }) {
 
     const contents = ['yaml', 'yml'].includes(extension)
       ? YAML.parse(filesystem.read(path))
-      : filesystem.read(path, 'json')
+      : extension === 'js' ? require(path) : filesystem.read(path, 'json')
 
     addModel(name, contents)
   }
