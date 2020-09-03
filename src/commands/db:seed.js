@@ -4,45 +4,53 @@ module.exports = {
 
   run: async toolbox => {
     const {
-      parameters: { options: { quantity } }
+      parameters: { options },
+      print,
+      strings: { startCase }
     } = toolbox
 
-    const { get } = require('lodash')
-    const { types, faker, fakerConfig } = require('../utils/faker')
-    const createConnection = require('../utils/connection')
+    const { seederTypes, getSeeder } = require('../utils/seeder')
+    const seeder = getSeeder(toolbox)
 
-    fakerConfig(toolbox)
+    const getConnection = require('../utils/connection')
+    const { connection, models } = await getConnection(toolbox)
 
-    async function createSeed (connection, models, key) {
-      (await connection
-        .createQueryBuilder()
-        .insert()
-        .into(key)
-        .values(generateValue(models[key].fields))
-        .execute()
-      )
-    }
-
-    function handleSeedValues (value) {
-      const valuesQuantity = quantity || 25
-
-      return Array.from(Array(valuesQuantity).keys()).map(item => item = value)
-    }
-
-    function generateValue (list) {
+    function getValue (model) {
       const value = {}
 
-      list.forEach(item => {
-        value[item.name] = get(faker, item.__seed || types[item.type])()
-      })
+      for (const { name, __value } of models[model].fields) {
+        value[name] = __value ? seeder(__value) : ''
+      }
 
-      return handleSeedValues(value)
+      return value
     }
 
-    createConnection(toolbox).then(({ connection, models }) => {
-      for (const key in models) {
-        createSeed(connection, models, key)
+    function getValues (model) {
+      const entries = options.entries || options.e || 25
+      return Array(entries).fill().map(entry => getValue(model))
+    }
+
+    function seed (model, values) {
+      return connection
+        .createQueryBuilder().insert()
+        .into(model).values(values)
+        .execute()
+    }
+
+    for (const model in models) {
+      const modelName = startCase(model)
+      const spinner = print.spin(`Seeding ${modelName}...`)
+
+      const values = getValues(model)
+
+      try {
+        await seed(model, values)
+        spinner.succeed(`${modelName} was seeded.`)
+      } catch (error) {
+        spinner.fail(`Error seeding ${modelName}.`)
       }
-    })
+    }
+
+    print.success('Done!')
   }
 }

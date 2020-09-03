@@ -5,8 +5,7 @@ module.exports = {
   // },
 
   seeder: {
-    locale: 'pt_PT',
-    seed: 'navpi'
+    locale: 'pt_PT'
   },
 
   // server: {

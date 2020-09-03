@@ -1,4 +1,4 @@
 fields:
   - name: name
     type: text
-    __seed: lorem.sentence
+    __value: '{{lorem.sentence}}'
