@@ -18,8 +18,9 @@ module.exports = {
     function getValue (model) {
       const value = {}
 
-      for (const { name, __value } of models[model].fields) {
-        value[name] = __value ? seeder(__value) : ''
+      for (const field of models[model].fields) {
+        const pattern = seeder(field.__value || seederTypes[field.type])
+        value[field.name] = seeder(pattern)
       }
 
       return value
