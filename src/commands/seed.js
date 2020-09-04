@@ -1,6 +1,5 @@
 module.exports = {
-  name: 'db:seed',
-  alias: ['db:s'],
+  name: 'seed',
 
   run: async toolbox => {
     const {

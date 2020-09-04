@@ -1,6 +1,5 @@
 module.exports = {
-  name: 'db:migrate',
-  alias: ['db:m'],
+  name: 'sync',
 
   run: async toolbox => {
     require('../utils/connection')(toolbox)

@@ -1,3 +1,0 @@
-Cada arquivo dessa pasta será uma "action", isto é uma interface entre o banco de dados e o servidor.
-
-Por exemplo, caso a requisição seja "GET /posts", deve-se consultar a tabela "post" e retornar todos os dados no padrão @bildvitta/api.

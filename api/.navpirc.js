@@ -5,7 +5,7 @@ module.exports = {
   // },
 
   seeder: {
-    locale: 'pt_PT'
+    locale: 'pt_BR'
   },
 
   // server: {
