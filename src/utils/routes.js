@@ -1,10 +1,16 @@
 const routes = []
 
-function registerRoute (route) {
+function addRoute (route) {
   routes.push(route)
+}
+
+function addRoutes (routes) {
+  routes.forEach(addRoute)
 }
 
 module.exports = {
   routes,
-  registerRoute
+
+  addRoute,
+  addRoutes
 }

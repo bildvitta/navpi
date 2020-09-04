@@ -1,8 +1,3 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-
-const { getSettings } = require('../utils/settings.js')
-
 module.exports = {
   name: 'serve',
   alias: ['s', 'srv', 'server'],
@@ -18,9 +13,34 @@ module.exports = {
     }
 
     const routesSpinner = print.spin('Registering routes...')
-    const { routes } = require('../utils/routes.js')
 
-    const server = express()
+    // Models
+    const { loadModels, models } = require('../utils/models')
+    loadModels(toolbox)
+
+    await require('../utils/connection')(toolbox)
+    const { addRoutes, routes } = require('../utils/routes')
+
+    // Actions
+    for (const model in models) {
+      const {
+        create, destroy, index, update, show
+      } = require('../utils/controller')(model, models[model].fields)
+
+      addRoutes([
+        { path: `/${model}`, method: 'get', action: index },
+        { path: `/${model}/:uuid`, method: 'get', action: show },
+        { path: `/${model}/:uuid/edit`, method: 'get', action: show },
+        { path: `/${model}`, method: 'post', action: create },
+        { path: `/${model}/:uuid`, method: 'patch', action: update },
+        { path: `/${model}/:uuid`, method: 'put', action: update },
+        { path: `/${model}/:uuid`, method: 'delete', action: destroy }
+      ])
+    }
+
+    // Routes
+    const bodyParser = require('body-parser')
+    const server = require('express')()
     server.use(bodyParser.json())
 
     for (const route of routes) {
@@ -31,8 +51,10 @@ module.exports = {
 
     routesSpinner.succeed('Successfully registered routes.')
 
+    // Server
     const serverSpinner = print.spin('Launching application...')
 
+    const { getSettings } = require('../utils/settings')
     const settings = getSettings(toolbox)
     const port = options.port || options.p || settings.server.port
 

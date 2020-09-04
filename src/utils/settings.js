@@ -1,7 +1,7 @@
 const defaults = {
   database: {
-    dialect: 'sqlite',
-    storage: 'database.sqlite'
+    type: 'sqlite',
+    database: 'database.sqlite'
   },
 
   seeder: {},
@@ -19,8 +19,8 @@ function getSettings (toolbox) {
 
   try {
     return {
-      ...loadConfig(brand, process.cwd()),
-      ...defaults
+      ...defaults,
+      ...loadConfig(brand, process.cwd())
     }
   } catch (error) {
     return defaults
