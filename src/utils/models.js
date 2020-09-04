@@ -17,9 +17,15 @@ function getEntityByModelName (name) {
   }
   
   for (const field of fields) {
-    columns[field.name] = {
+    const column = {
       type: getDatabaseTypeByField(field.type)
     }
+
+    if (!field.required) {
+      column.nullable = true
+    }
+
+    columns[field.name] = column
   }
 
   return {

@@ -18,8 +18,9 @@ module.exports = {
       const value = {}
 
       for (const field of models[model].fields) {
-        const pattern = seeder(field.__value || seederTypes[field.type])
-        value[field.name] = seeder(pattern)
+        value[field.name] = seeder(
+          seeder(field.__value || seederTypes[field.type])
+        )
       }
 
       return value
@@ -41,10 +42,8 @@ module.exports = {
       const modelName = startCase(model)
       const spinner = print.spin(`Seeding ${modelName}...`)
 
-      const values = getValues(model)
-
       try {
-        await seed(model, values)
+        await seed(model, getValues(model))
         spinner.succeed(`${modelName} was seeded.`)
       } catch (error) {
         spinner.fail(`Error seeding ${modelName}.`)

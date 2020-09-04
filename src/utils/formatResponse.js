@@ -30,8 +30,12 @@ function formatResponse (modelName, context = {}) {
     return entries
   }
 
-  const response = {}
   const model = require('./models').models[modelName]
+
+  const response = {
+    result: context.result || undefined,
+    results: context.results || undefined
+  }
 
   response.fields = filterPrivatesInArray([
     ...(model.fields || []),
@@ -42,9 +46,6 @@ function formatResponse (modelName, context = {}) {
     ...(model.metadata || {}),
     ...(context.metadata || {})
   })
-
-  response.result = context.result || undefined
-  response.results = context.results || undefined
 
   response.status = {
     code: 200
