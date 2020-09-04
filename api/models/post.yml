@@ -1,4 +1,0 @@
-fields:
-  - name: name
-    type: text
-    __value: '{{lorem.sentence}}'

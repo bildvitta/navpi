@@ -20,22 +20,20 @@ module.exports = {
 
     await require('../utils/connection')(toolbox)
     const { addRoute, routes } = require('../utils/routes')
-    
+
     // Actions
     for (const model in models) {
-      const actions = require('../utils/actions')(model)
+      const {
+        create, destroy, index, update, show
+      } = require('../utils/controller')(model, models[model].fields)
 
-      addRoute({
-        path: `/${model}`,
-        method: 'get',
-        action: actions.fetchList
-      })
-
-      addRoute({
-        path: `/${model}/:uuid`,
-        method: 'get',
-        action: actions.fetchSingle
-      })
+      addRoute({ path: `/${model}`, method: 'get', action: index })
+      addRoute({ path: `/${model}/:uuid`, method: 'get', action: show })
+      addRoute({ path: `/${model}/:uuid/edit`, method: 'get', action: show })
+      addRoute({ path: `/${model}`, method: 'post', action: create })
+      addRoute({ path: `/${model}/:uuid`, method: 'patch', action: update })
+      addRoute({ path: `/${model}/:uuid`, method: 'put', action: update })
+      addRoute({ path: `/${model}/:uuid`, method: 'delete', action: destroy })
     }
 
     // Routes

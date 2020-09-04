@@ -1,8 +1,0 @@
-fields:
-  - name: name
-    type: text
-    __value: '{{lorem.sentence}}'
-
-  - name: email
-    type: text
-    __value: '{{internet.email}}'
