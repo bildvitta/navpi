@@ -41,6 +41,9 @@ module.exports = {
     // Routes
     const bodyParser = require('body-parser')
     const server = require('express')()
+    const cors = require('cors')
+
+    server.use(cors())
     server.use(bodyParser.json())
 
     for (const route of routes) {
