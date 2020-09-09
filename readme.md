@@ -10,11 +10,11 @@ A CLI for create dynamic mocks for [steroids](https://github.com/bildvitta/quasa
 Inside your project you will create a folder for your API mock (can be outside the project too).
 
 > - navpi new `[folder-name]`
->  * ex: `navpi new api` (will create a folder named `api`).
+>   - ex: `navpi new api` (will create a folder named `api`).
 > - inside `api` folder: `navpi [g | generate] [m | model] [model-name] [field:type] [field:type]...`
->  * ex: `navpi g m posts name:text email:text`;
->  * ex: `navpi generate model users name email phone`;
->  * the default `type` for `field` is `text`, check [here](https://github.com/bildvitta/api) all types avaliables.
+>   * ex: `navpi g m posts name:text email:text`;
+>   * ex: `navpi generate model users name email phone`;
+>   * the default `type` for `field` is `text`, check [here](https://github.com/bildvitta/api) all types avaliables.
 
 ## For Development
 
