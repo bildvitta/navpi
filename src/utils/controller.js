@@ -1,3 +1,5 @@
+const { request } = require('express')
+
 const blankTypes = [null, undefined, '']
 
 function notFound (response) {
@@ -11,6 +13,10 @@ function status (code, text) {
 module.exports = function (model, fields) {
   const { createQueryBuilder } = require('typeorm')
   const formatResponse = require('./formatResponse')
+  const Validator = require('./validators')
+  const validator = new Validator(fields)
+
+  console.log(model, fields)
 
   return {
     async index (request, response) {
@@ -39,7 +45,9 @@ module.exports = function (model, fields) {
     async create (request, response) {
       const { body } = request
       const errors = {}
-
+      const errors2 = validator.validate(body)
+      console.log("create -> errors", errors2)
+      
       for (const { name, required } of fields) {
         if (required && blankTypes.includes(body[name])) {
           errors[name] = 'Required'
