@@ -29,7 +29,7 @@ module.exports = {
 
     if (templateType && !avaliableTypes.includes(templateType)) {
       return print.error(
-        `type: "${templateType}" is not supported, the avaliable types are: javascript * js * json * yml`
+        `type: "${templateType}" is not supported, the avaliable types are: [${avaliableTypes}]`
       )
     }
 
