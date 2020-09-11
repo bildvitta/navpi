@@ -1,10 +1,10 @@
 const model = {
   alias: ['m'],
 
-  generate ({ name, fields }, templateType = 'yml') {
+  generate ({ name, fields, fileType }) {
     return {
-      template: `model.${templateType}.ejs`,
-      target: `models/${name}.${templateType}`,
+      template: `model.${fileType}.ejs`,
+      target: `models/${name}.${fileType}`,
       props: { fields }
     }
   }
@@ -23,17 +23,22 @@ module.exports = {
       template
     } = toolbox
 
-    let { type: templateType } = parameters.options
+    const optionsType = parameters.options.type || parameters.options.t || 'yml'
 
-    const avaliableTypes = ['javascript', 'js', 'yml', 'json']
-
-    if (templateType && !avaliableTypes.includes(templateType)) {
+    const fileTypes = {
+      js: ['javascript', 'js', 'jscript', 'script'],
+      json: ['json'],
+      yml: ['yaml', 'yml']
+    }
+    
+    const fileKeys = Object.keys(fileTypes)
+    const fileType = fileKeys.find(key => fileTypes[key].includes(optionsType))
+    
+    if (!fileType) {
       return print.error(
-        `type: "${templateType}" is not supported, the avaliable types are: [${avaliableTypes}]`
+        `The '${optionsType}' is not supported, please use: ${fileKeys.join(', ')}.`
       )
     }
-
-    templateType = templateType === 'javascript' ? 'js' : templateType
 
     // TODO: verificar existencia de um arquivo com o mesmo nome (mesmo que em outro formato e questionar sobre sua substituição.)
 
@@ -53,7 +58,7 @@ module.exports = {
     const spinner = print.spin(`Generating ${key}...`)
 
     try {
-      const options = profile.generate({ name, fields }, templateType)
+      const options = profile.generate({ name, fields, fileType })
       await template.generate(options)
 
       spinner.succeed(`Successfully generated ${key} at ${options.target}.`)

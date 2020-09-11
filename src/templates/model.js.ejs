@@ -1,12 +1,12 @@
 <% if (props.fields.length) { -%>
-<% var index = 0 -%>
+<%_ var index = 0 -%>
 module.exports = {
   fields: [
   <% for (const field of props.fields) { -%>
-<% index = index + 1 -%>
+  <%_ index = index + 1 -%>
   {
-  <% const [name, type = 'text'] = field.split(':') -%>
-    name: '<%= name %>',
+  <%_ const [name, type = 'text'] = field.split(':') -%>
+      name: '<%= name %>',
       type: '<%= type %>'
     }<%= index === props.fields.length ? '' : ',' %>
   <% } -%>
