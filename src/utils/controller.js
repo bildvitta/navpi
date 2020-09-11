@@ -16,7 +16,7 @@ module.exports = function (model, fields) {
     async index (request, response) {
       const results = await createQueryBuilder(model)
         .getMany()
-
+        console.log(formatResponse(model, { request, results }), '>>')
       response.json(
         formatResponse(model, { request, results })
       )
@@ -90,6 +90,12 @@ module.exports = function (model, fields) {
       query
         ? response.json(status(200, 'Destroyed'))
         : notFound(response)
+    },
+
+    async filters (request, response) {
+      // console.log(formatResponse(model, { request }))
+      const { fields } = formatResponse(model, { request })
+      response.json(fields)
     }
   }
 }
