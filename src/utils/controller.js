@@ -14,15 +14,51 @@ module.exports = function (model, fields) {
 
   return {
     async index (request, response) {
-      const results = await createQueryBuilder(model)
-        .getMany()
-        console.log(formatResponse(model, { request, results }), '>>')
-      response.json(
-        formatResponse(model, { request, results })
-      )
+      const {
+        limit = 12,
+        offset = 0,
+        ordering,
+        search,
+        ...filters
+       } = request.query
+
+      const Like = require('typeorm')
+
+      if (Object.keys(filters).length) {
+        try {
+          const query = createQueryBuilder(model).where({ ...filters })
+          const count = await query.getCount()
+
+          const results = (await query
+            .skip(offset)
+            .take(limit)
+            .getMany()
+          )
+
+          response.json(
+            formatResponse(model, { request, results })
+          )
+        } catch (error) {
+          response.json(
+            formatResponse(model, { request, results: [] })
+          )
+        }
+      } else {
+        const query = createQueryBuilder(model)
+        const counter = await query.getCount()
+
+        const results = (await query
+          .skip(offset).take(limit).getMany()
+        )
+
+        response.json(
+          formatResponse(model, { request, results })
+        )
+      }
     },
 
     async show (request, response) {
+      console.log('fui chamado krl')
       const {
         params: { uuid }
       } = request
@@ -93,9 +129,8 @@ module.exports = function (model, fields) {
     },
 
     async filters (request, response) {
-      // console.log(formatResponse(model, { request }))
-      const { fields } = formatResponse(model, { request })
-      response.json(fields)
+      // await request
+      return response.json({ fields: formatResponse(model, { request }).fields })
     }
   }
 }

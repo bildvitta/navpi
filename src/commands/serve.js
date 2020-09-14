@@ -24,9 +24,8 @@ module.exports = {
     // Actions
     for (const model in models) {
       const {
-imp        create, destroy, index, update, show, filters
+        create, destroy, index, update, show, filters
       } = require('../utils/controller')(model, models[model].fields)
-      console.log('cheguei aqui')
 
       addRoutes([
         { path: `/${model}`, method: 'get', action: index },
@@ -49,9 +48,9 @@ imp        create, destroy, index, update, show, filters
     server.use(bodyParser.json())
 
     for (const route of routes) {
-      server[route.method](route.path, (request, response, next) =>
-        route.action(request, response).then(next).catch(next)
-      )
+      server[route.method](route.path, (request, response, next) => {
+        return route.action(request, response).then(next).catch(next)
+      })
     }
 
     routesSpinner.succeed('Successfully registered routes.')
