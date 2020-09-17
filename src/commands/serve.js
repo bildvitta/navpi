@@ -25,7 +25,7 @@ module.exports = {
     for (const model in models) {
       const {
         create, destroy, index, update, show, filters
-      } = require('../utils/controller')(model, models[model].fields)
+      } = require('../utils/controller')(model, models[model].fields, toolbox)
 
       addRoutes([
         { path: `/${model}`, method: 'get', action: index },
@@ -43,9 +43,12 @@ module.exports = {
     const bodyParser = require('body-parser')
     const server = require('express')()
     const cors = require('cors')
+    const boolParser = require('express-query-boolean')
 
     server.use(cors())
     server.use(bodyParser.json())
+    server.use(boolParser())
+
 
     for (const route of routes) {
       server[route.method](route.path, (request, response, next) => {

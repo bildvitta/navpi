@@ -8,8 +8,8 @@ function status (code, text) {
   return { status: { code, text } }
 }
 
-module.exports = function (model, fields) {
-  const { createQueryBuilder } = require('typeorm')
+module.exports = function (model, fields, toolbox) {
+  const { createQueryBuilder, getRepository } = require('typeorm')
   const formatResponse = require('./formatResponse')
 
   return {
@@ -22,17 +22,16 @@ module.exports = function (model, fields) {
         ...filters
        } = request.query
 
-      const Like = require('typeorm')
+      const filterService = require('./filterService').filterService(model)
+      const formattedFilters = filterService.formatFilter(search, filters)
 
-      if (Object.keys(filters).length) {
+      if (search || Object.keys(filters).length) {
         try {
-          const query = createQueryBuilder(model).where({ ...filters })
+          const query = createQueryBuilder(model).andWhere(formattedFilters)
           const count = await query.getCount()
 
           const results = (await query
-            .skip(offset)
-            .take(limit)
-            .getMany()
+            .skip(offset).take(limit).getMany()
           )
 
           response.json(
@@ -58,7 +57,6 @@ module.exports = function (model, fields) {
     },
 
     async show (request, response) {
-      console.log('fui chamado krl')
       const {
         params: { uuid }
       } = request
