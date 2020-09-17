@@ -9,7 +9,7 @@ function status (code, text) {
 }
 
 module.exports = function (model, fields, toolbox) {
-  const { createQueryBuilder, getRepository } = require('typeorm')
+  const { createQueryBuilder } = require('typeorm')
   const formatResponse = require('./formatResponse')
 
   return {
@@ -127,7 +127,6 @@ module.exports = function (model, fields, toolbox) {
     },
 
     async filters (request, response) {
-      // await request
       return response.json({ fields: formatResponse(model, { request }).fields })
     }
   }

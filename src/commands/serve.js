@@ -45,15 +45,12 @@ module.exports = {
     const cors = require('cors')
     const boolParser = require('express-query-boolean')
 
-    server.use(cors())
-    server.use(bodyParser.json())
-    server.use(boolParser())
-
+    server.use(cors(), bodyParser.json(), boolParser())
 
     for (const route of routes) {
-      server[route.method](route.path, (request, response, next) => {
-        return route.action(request, response).then(next).catch(next)
-      })
+      server[route.method](route.path, (request, response, next) => (
+        route.action(request, response).then(next).catch(next)
+      ))
     }
 
     routesSpinner.succeed('Successfully registered routes.')
