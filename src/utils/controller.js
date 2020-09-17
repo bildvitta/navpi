@@ -8,7 +8,7 @@ function status (code, text) {
   return { status: { code, text } }
 }
 
-module.exports = function (model, fields, toolbox) {
+module.exports = function (model, fields) {
   const { createQueryBuilder } = require('typeorm')
   const formatResponse = require('./formatResponse')
 

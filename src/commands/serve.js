@@ -25,7 +25,7 @@ module.exports = {
     for (const model in models) {
       const {
         create, destroy, index, update, show, filters
-      } = require('../utils/controller')(model, models[model].fields, toolbox)
+      } = require('../utils/controller')(model, models[model].fields)
 
       addRoutes([
         { path: `/${model}`, method: 'get', action: index },
