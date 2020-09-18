@@ -46,7 +46,6 @@ module.exports = function (model, fields) {
       const { body } = request
       const errors = {}
       const errors2 = validator.validate(body)
-      console.log("create -> errors", errors2)
       
       for (const { name, required } of fields) {
         if (required && blankTypes.includes(body[name])) {
