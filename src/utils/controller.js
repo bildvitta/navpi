@@ -22,38 +22,16 @@ module.exports = function (model, fields) {
         ...filters
        } = request.query
 
-      const filterService = require('./filterService').filterService(model)
-      const formattedFilters = filterService.formatFilter(search, filters)
+      const formatFilter = require('./formatFilter')
 
-      if (search || Object.keys(filters).length) {
-        try {
-          const query = createQueryBuilder(model).andWhere(formattedFilters)
-          const count = await query.getCount()
+      const queryBuilder = createQueryBuilder(model).where(
+        (Object.keys(filters).length || search) ? formatFilter(model, search, filters) : []
+      )
 
-          const results = (await query
-            .skip(offset).take(limit).getMany()
-          )
+      const count = await queryBuilder.getCount()
+      const results = await queryBuilder.skip(offset).take(limit).getMany()
 
-          response.json(
-            formatResponse(model, { request, results })
-          )
-        } catch (error) {
-          response.json(
-            formatResponse(model, { request, results: [] })
-          )
-        }
-      } else {
-        const query = createQueryBuilder(model)
-        const counter = await query.getCount()
-
-        const results = (await query
-          .skip(offset).take(limit).getMany()
-        )
-
-        response.json(
-          formatResponse(model, { request, results })
-        )
-      }
+      return response.json(formatResponse(model, { request, results, count }))
     },
 
     async show (request, response) {

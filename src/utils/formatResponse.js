@@ -34,7 +34,7 @@ function formatResponse (modelName, context = {}) {
 
   const response = {
     result: context.result || undefined,
-    results: context.results || undefined
+    results: context.results || undefined,
   }
 
   response.fields = filterPrivatesInArray([
@@ -46,6 +46,10 @@ function formatResponse (modelName, context = {}) {
     ...(model.metadata || {}),
     ...(context.metadata || {})
   })
+
+  if (~context.count) {
+    response['count'] = context.count
+  }
 
   response.status = {
     code: 200
