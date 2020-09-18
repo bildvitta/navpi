@@ -31,7 +31,7 @@ module.exports = function (model, fields) {
       const count = await queryBuilder.getCount()
       const results = await queryBuilder.skip(offset).take(limit).getMany()
 
-      return response.json(formatResponse(model, { request, results, count }))
+      response.json(formatResponse(model, { request, results, count }))
     },
 
     async show (request, response) {
