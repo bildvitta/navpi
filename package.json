@@ -12,6 +12,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-query-boolean": "^2.0.0",
     "faker": "^5.1.0",
     "gluegun": "latest",
     "lodash": "^4.17.20",

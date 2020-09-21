@@ -1,0 +1,15 @@
+<% if (props.fields.length) { -%>
+<%_ var index = 0 -%>
+{
+  "fields": [
+  <% for (const field of props.fields) { -%>
+  <%_ index = index + 1 -%>
+  {
+  <%_ const [name, type = 'text'] = field.split(':') -%>
+      "name": "<%= name %>",
+      "type": "<%= type %>"
+    }<%= index === props.fields.length ? '' : ',' %>
+  <% } -%>
+]
+}
+<% } -%>
