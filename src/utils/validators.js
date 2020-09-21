@@ -9,27 +9,26 @@ class Validator {
       'required',
       'readonly'
     ]
+  }
 
-    this.validators = {
-      'min-length': this.minLegth
+  validators () {
+    return {
+      minLegth (model, value, length) {
+        value.length > length && this.setError(model, `Este campo precisa de no mínimo ${length} caracteres`)
+      },
+
+      maxLength (model, value, length) {
+        value.length < length && this.setError(model, `Este campo precisa de no maximo ${length} caracteres`)
+      },
+
+      required (model, value) {
+        !value.length && this.setError(model, 'Campo obrigatório')
+      }
     }
-  }
-
-  minLegth (value, model, length) {
-    value.length > length && this.setError(model, `Este campo precisa de no mínimo ${length} caracteres`)
-  }
-
-  maxLength (value, model, length) {
-    value.length < length && this.setError(model, `Este campo precisa de no maximo ${length} caracteres`)
   }
 
   setError (model, value) {
     this.errors[model] = [value]
-  }
-
-  required (model, value) {
-    console.log('fui chamado', model, value)
-    !value.length && this.setError(model, 'Campo obrigatório')
   }
 
   validate (field) {
@@ -40,7 +39,7 @@ class Validator {
         this.required(item.name, field[item.name])
       }
 
-      console.log(this.errors, '>>>> errosssssss')
+      console.log(this.this.fields, '>>>> errosssssss')
 
       return this.errors
     })
