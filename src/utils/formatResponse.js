@@ -34,7 +34,7 @@ function formatResponse (modelName, context = {}) {
 
   const response = {
     result: context.result || undefined,
-    results: context.results || undefined,
+    results: context.results || undefined
   }
 
   response.fields = filterPrivatesInArray([

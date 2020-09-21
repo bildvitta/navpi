@@ -24,9 +24,7 @@ module.exports = function (model, fields) {
 
       const formatFilter = require('./formatFilter')
 
-      const queryBuilder = createQueryBuilder(model).where(
-        (Object.keys(filters).length || search) ? formatFilter(model, search, filters) : []
-      )
+      const queryBuilder = createQueryBuilder(model).where(formatFilter(model, search, filters))
 
       const count = await queryBuilder.getCount()
       const results = await queryBuilder.skip(offset).take(limit).getMany()
@@ -105,7 +103,7 @@ module.exports = function (model, fields) {
     },
 
     async filters (request, response) {
-      return response.json({ fields: formatResponse(model, { request }).fields })
+      return response.status(200).json({ fields: formatResponse(model, { request }).fields })
     }
   }
 }
