@@ -14,12 +14,22 @@ module.exports = function (model, fields) {
 
   return {
     async index (request, response) {
-      const results = await createQueryBuilder(model)
-        .getMany()
+      const {
+        limit = 12,
+        offset = 0,
+        ordering,
+        search,
+        ...filters
+       } = request.query
 
-      response.json(
-        formatResponse(model, { request, results })
-      )
+      const formatFilter = require('./formatFilter')
+
+      const queryBuilder = createQueryBuilder(model).where(formatFilter(model, search, filters))
+
+      const count = await queryBuilder.getCount()
+      const results = await queryBuilder.skip(offset).take(limit).getMany()
+
+      response.json(formatResponse(model, { request, results, count }))
     },
 
     async show (request, response) {
@@ -90,6 +100,10 @@ module.exports = function (model, fields) {
       query
         ? response.json(status(200, 'Destroyed'))
         : notFound(response)
+    },
+
+    async filters (request, response) {
+      return response.json({ fields: formatResponse(model, { request })})
     }
   }
 }

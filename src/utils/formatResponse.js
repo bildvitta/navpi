@@ -20,6 +20,10 @@ function formatResponse (modelName, context = {}) {
   }
 
   function run (object) {
+    if (!Object.keys(object).length) {
+      return undefined
+    }
+
     const entries = {}
 
     for (const key in object) {
@@ -34,7 +38,8 @@ function formatResponse (modelName, context = {}) {
 
   const response = {
     result: context.result || undefined,
-    results: context.results || undefined
+    results: context.results || undefined,
+    count: context.count || undefined
   }
 
   response.fields = filterPrivatesInArray([
