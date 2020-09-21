@@ -103,7 +103,7 @@ module.exports = function (model, fields) {
     },
 
     async filters (request, response) {
-      return response.status(200).json({ fields: formatResponse(model, { request }).fields })
+      return response.json({ fields: formatResponse(model, { request })})
     }
   }
 }
