@@ -13,10 +13,6 @@ function status (code, text) {
 module.exports = function (model, fields) {
   const { createQueryBuilder } = require('typeorm')
   const formatResponse = require('./formatResponse')
-  const Validator = require('./validators')
-  const validator = new Validator(fields)
-
-  console.log(model, fields)
 
   return {
     async index (request, response) {
@@ -54,29 +50,30 @@ module.exports = function (model, fields) {
 
     async create (request, response) {
       const { body } = request
-      const errors = {}
-      const errors2 = validator.validate(body)
-      
-      for (const { name, required } of fields) {
-        if (required && blankTypes.includes(body[name])) {
-          errors[name] = 'Required'
-        }
-      }
 
-      if (Object.keys(errors).length) {
-        response.status(400).json({
-          errors,
-          ...status(400, 'Bad request')
+      const { validationResult } = require('express-validator')
+      const AppError = require('./errors/AppError')
+      const formatError = require('./errors/formatError')
+
+      const errors = validationResult(request)
+
+      if (!errors.isEmpty()) {
+        throw new AppError({
+          errors: formatError(errors.array()),
+          status: {
+            code: 400,
+            text: 'Error on create item.'
+          }
         })
-      } else {
-        await createQueryBuilder()
-          .insert()
-          .into(model)
-          .values(body)
-          .execute()
-
-        response.json(status(200, 'Created'))
       }
+
+      await createQueryBuilder()
+        .insert()
+        .into(model)
+        .values(body)
+        .execute()
+
+      response.json(status(200, 'Created'))
     },
 
     async update (request, response) {
@@ -84,6 +81,22 @@ module.exports = function (model, fields) {
         body,
         params: { uuid }
       } = request
+
+      const { validationResult } = require('express-validator')
+      const AppError = require('./errors/AppError')
+      const formatError = require('./errors/formatError')
+
+      const errors = validationResult(request)
+
+      if (!errors.isEmpty()) {
+        throw new AppError({
+          errors: formatError(errors.array()),
+          status: {
+            code: 400,
+            text: 'Error on update item.'
+          }
+        })
+      }
 
       await createQueryBuilder(model)
         .update()

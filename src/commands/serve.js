@@ -21,6 +21,9 @@ module.exports = {
     await require('../utils/connection')(toolbox)
     const { addRoutes, routes } = require('../utils/routes')
 
+    // errors validator
+    const Validators = require('../utils/errors/Validators')
+
     // Actions
     for (const model in models) {
       const {
@@ -28,17 +31,16 @@ module.exports = {
       } = require('../utils/controller')(model, models[model].fields)
 
       addRoutes([
-        { path: `/${model}`, method: 'get', action: index },
-        { path: `/${model}/filters`, method: 'get', action: filters },
-        { path: `/${model}/:uuid`, method: 'get', action: show },
-        { path: `/${model}/:uuid/edit`, method: 'get', action: show },
-        { path: `/${model}`, method: 'post', action: create },
-        { path: `/${model}/:uuid`, method: 'patch', action: update },
-        { path: `/${model}/:uuid`, method: 'put', action: update },
-        { path: `/${model}/:uuid`, method: 'delete', action: destroy }
+        { path: `/${model}`, method: 'get', action: index, model },
+        { path: `/${model}/filters`, method: 'get', action: filters, model },
+        { path: `/${model}/:uuid`, method: 'get', action: show, model },
+        { path: `/${model}/:uuid/edit`, method: 'get', action: show, model },
+        { path: `/${model}`, method: 'post', action: create, model },
+        { path: `/${model}/:uuid`, method: 'patch', action: update, model },
+        { path: `/${model}/:uuid`, method: 'put', action: update, model },
+        { path: `/${model}/:uuid`, method: 'delete', action: destroy, model }
       ])
     }
-
 
     // Routes
     const bodyParser = require('body-parser')
@@ -47,12 +49,27 @@ module.exports = {
     const boolParser = require('express-query-boolean')
 
     server.use(cors(), bodyParser.json(), boolParser())
+    const { validationResult } = require('express-validator');
 
     for (const route of routes) {
-      server[route.method](route.path, (request, response, next) => (
-        route.action(request, response).then(next).catch(next)
-      ))
+      const validationsMethods = ['post', 'put', 'patch']
+
+      if (validationsMethods.includes(route.method)) {
+        const validators = new Validators(route.model)
+        validators.call()
+
+        server[route.method](route.path, [...validators.expressValidators], (request, response, next) => (
+          route.action(request, response).then(next).catch(next)
+        ))
+      } else {
+        server[route.method](route.path, (request, response, next) => (
+          route.action(request, response).then(next).catch(next)
+        ))
+      }
     }
+
+    // middleware para controlar os erros globalmente
+    server.use(require('../utils/errors/globalErrorHandler'))
 
     routesSpinner.succeed('Successfully registered routes.')
 

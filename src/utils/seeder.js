@@ -1,6 +1,7 @@
 const seederTypes = {
   boolean: '{{random.boolean}}',
-  text: '{{lorem.sentence}}'
+  text: '{{lorem.sentence}}',
+  number: '{{random.number}}'
 }
 
 function getSeeder (toolbox) {
