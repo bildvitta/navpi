@@ -31,14 +31,14 @@ module.exports = {
       } = require('../utils/controller')(model, models[model].fields)
 
       addRoutes([
-        { path: `/${model}`, method: 'get', action: index, model },
-        { path: `/${model}/filters`, method: 'get', action: filters, model },
-        { path: `/${model}/:uuid`, method: 'get', action: show, model },
-        { path: `/${model}/:uuid/edit`, method: 'get', action: show, model },
-        { path: `/${model}`, method: 'post', action: create, model },
-        { path: `/${model}/:uuid`, method: 'patch', action: update, model },
-        { path: `/${model}/:uuid`, method: 'put', action: update, model },
-        { path: `/${model}/:uuid`, method: 'delete', action: destroy, model }
+        { path: `/${model}`, method: 'get', action: index },
+        { path: `/${model}/filters`, method: 'get', action: filters },
+        { path: `/${model}/:uuid`, method: 'get', action: show },
+        { path: `/${model}/:uuid/edit`, method: 'get', action: show },
+        { path: `/${model}`, method: 'post', action: create },
+        { path: `/${model}/:uuid`, method: 'patch', action: update },
+        { path: `/${model}/:uuid`, method: 'put', action: update },
+        { path: `/${model}/:uuid`, method: 'delete', action: destroy }
       ])
     }
 
