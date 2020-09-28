@@ -1,7 +1,3 @@
-const { request } = require('express')
-
-const blankTypes = [null, undefined, '']
-
 function notFound (response) {
   return response.status(404).json(status(404, 'Not found'))
 }
@@ -31,7 +27,7 @@ module.exports = function (model, fields) {
       const count = await queryBuilder.getCount()
       const results = await queryBuilder.skip(offset).take(limit).getMany()
 
-      response.json(formatResponse(model, { request, results, count }))
+      response.json(formatResponse({ modelName: model, context: { request, results, count } }))
     },
 
     async show (request, response) {
@@ -44,7 +40,7 @@ module.exports = function (model, fields) {
         .getOne()
 
       result
-        ? response.json(formatResponse(model, { request, result }))
+        ? response.json(formatResponse({ modelName: model, context: { request, result } }))
         : notFound(response)
     },
 
@@ -58,13 +54,7 @@ module.exports = function (model, fields) {
       const errors = validationResult(request)
 
       if (!errors.isEmpty()) {
-        throw new AppError({
-          errors: formatError(errors.array()),
-          status: {
-            code: 400,
-            text: 'Error on create item.'
-          }
-        })
+        return response.json(formatResponse({ errors: errors.array() }))
       }
 
       await createQueryBuilder()
@@ -83,19 +73,10 @@ module.exports = function (model, fields) {
       } = request
 
       const { validationResult } = require('express-validator')
-      const AppError = require('./errors/AppError')
-      const formatError = require('./errors/formatError')
-
       const errors = validationResult(request)
 
       if (!errors.isEmpty()) {
-        throw new AppError({
-          errors: formatError(errors.array()),
-          status: {
-            code: 400,
-            text: 'Error on update item.'
-          }
-        })
+        return response.json(formatResponse({ errors: errors.array() }))
       }
 
       await createQueryBuilder(model)
@@ -123,7 +104,7 @@ module.exports = function (model, fields) {
     },
 
     async filters (request, response) {
-      return response.json({ fields: formatResponse(model, { request })})
+      return response.json({ fields: formatResponse({ modelName: model, context: { request } })})
     }
   }
 }
