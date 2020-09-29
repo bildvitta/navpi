@@ -104,7 +104,7 @@ module.exports = function (model, fields) {
     },
 
     async filters (request, response) {
-      return response.json({ fields: formatResponse({ modelName: model, context: { request } })})
+      return response.json(formatResponse({ modelName: model, context: { request } }))
     }
   }
 }
