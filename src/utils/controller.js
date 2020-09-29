@@ -8,7 +8,7 @@ function status (code, text) {
 
 module.exports = function (model, fields) {
   const { createQueryBuilder } = require('typeorm')
-  const formatResponse = require('./formatResponse')
+  const { onSuccessResponse, onErrorResponse } = require('./formatResponse')
 
   return {
     async index (request, response) {
@@ -27,7 +27,7 @@ module.exports = function (model, fields) {
       const count = await queryBuilder.getCount()
       const results = await queryBuilder.skip(offset).take(limit).getMany()
 
-      response.json(formatResponse({ modelName: model, context: { request, results, count } }))
+      response.json(onSuccessResponse(model, { request, results, count }))
     },
 
     async show (request, response) {
@@ -40,7 +40,7 @@ module.exports = function (model, fields) {
         .getOne()
 
       result
-        ? response.json(formatResponse({ modelName: model, context: { request, result } }))
+        ? response.json(onSuccessResponse(model, { request, result }))
         : notFound(response)
     },
 
@@ -51,7 +51,7 @@ module.exports = function (model, fields) {
       const errors = validationResult(request)
 
       if (!errors.isEmpty()) {
-        return response.json(formatResponse({ errors: errors.array() }))
+        return response.json(onErrorResponse(errors.array()))
       }
 
       await createQueryBuilder()
@@ -73,7 +73,7 @@ module.exports = function (model, fields) {
       const errors = validationResult(request)
 
       if (!errors.isEmpty()) {
-        return response.json(formatResponse({ errors: errors.array() }))
+        return response.json(onErrorResponse(errors.array()))
       }
 
       await createQueryBuilder(model)
@@ -101,7 +101,7 @@ module.exports = function (model, fields) {
     },
 
     async filters (request, response) {
-      return response.json(formatResponse({ modelName: model, context: { request } }))
+      return response.json(onSuccessResponse(model, { request }, false))
     }
   }
 }
