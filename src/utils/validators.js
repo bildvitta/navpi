@@ -24,7 +24,7 @@ const validators = {
 
 function handleValidations (modelName) {
   const expressValidators = []
-  const model = require('../models').getModel(modelName)
+  const model = require('./models').getModel(modelName)
 
   model.fields.forEach(field => {
     for (const key in validators) {

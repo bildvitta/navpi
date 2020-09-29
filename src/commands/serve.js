@@ -48,7 +48,7 @@ module.exports = {
     server.use(cors(), bodyParser.json(), boolParser())
 
     for (const route of routes) {
-      const validations = require('../utils/errors/validators')
+      const validations = require('../utils/validators')
 
       server[route.method](route.path, [...validations(route.model)], (request, response, next) => (
         route.action(request, response).then(next).catch(next)

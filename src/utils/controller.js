@@ -48,9 +48,6 @@ module.exports = function (model, fields) {
       const { body } = request
 
       const { validationResult } = require('express-validator')
-      const AppError = require('./errors/AppError')
-      const formatError = require('./errors/formatError')
-
       const errors = validationResult(request)
 
       if (!errors.isEmpty()) {
