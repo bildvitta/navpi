@@ -1,8 +1,8 @@
 const { body } = require('express-validator')
 
 const validators = {
-  email ({ name }) {
-    return name === 'email' && body(name).optional({ checkFalsy: true }).isEmail().withMessage('Invalid E-mail.')
+  email ({ type, name }) {
+    return type === 'email' && body(name).optional({ checkFalsy: true }).isEmail().withMessage('Invalid E-mail.')
   },
 
   required ({ required, name }) {

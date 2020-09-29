@@ -14,7 +14,8 @@ const types = {
   text: 'varchar',
   textarea: 'text',
   time: 'varchar',
-  upload: 'varchar'
+  upload: 'varchar',
+  email: 'varchar'
 }
 
 /**
