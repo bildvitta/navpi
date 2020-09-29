@@ -6,6 +6,7 @@ const types = {
   datetime: 'datetime',
   decimal: 'decimal',
   editor: 'text',
+  email: 'varchar',
   money: 'decimal',
   number: 'int',
   percent: 'decimal',
@@ -14,8 +15,7 @@ const types = {
   text: 'varchar',
   textarea: 'text',
   time: 'varchar',
-  upload: 'varchar',
-  email: 'varchar'
+  upload: 'varchar'
 }
 
 /**
