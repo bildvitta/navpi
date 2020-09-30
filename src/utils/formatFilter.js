@@ -1,10 +1,10 @@
 function formatFilter (modelName, search, filters) {
   if (!search && !Object.keys(filters).length) {
-    return []
+    return undefined
   }
 
   const model = require('./models').getModel(modelName)
-  const searchLikeTypes = ['text', 'textarea']
+  const searchLikeTypes = ['text', 'textarea', 'email']
 
   const formattedFilters = []
 

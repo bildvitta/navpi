@@ -20,9 +20,14 @@ module.exports = function (model, fields) {
         ...filters
        } = request.query
 
-      const formatFilter = require('./formatFilter')
+      const formatFilter = require('./formatFilter')(model, search, filters)
 
-      const queryBuilder = createQueryBuilder(model).where(formatFilter(model, search, filters))
+      // se passar alguma query que não exista ele retorna sem resultados
+      if (Array.isArray(formatFilter) && !formatFilter.length) {
+        return response.json(onSuccessResponse(model, { request, results: [], count: 0 }))
+      }
+
+      const queryBuilder = createQueryBuilder(model).where(formatFilter)
 
       const count = await queryBuilder.getCount()
       const results = await queryBuilder.skip(offset).take(limit).getMany()
