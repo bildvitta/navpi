@@ -10,11 +10,45 @@ function filterPrivates (object) {
   return public
 }
 
-function filterPrivatesInArray (list) {
-  return list.map(item => filterPrivates(item))
+function onErrorResponse (errorsToFormat, context = {}) {
+  const errors = {}
+
+  errorsToFormat.forEach(({ msg, param }) => {
+    if (Object.prototype.hasOwnProperty.call(errors, param)) {
+      return errors[param].push(msg)
+    }
+
+    errors[param] = [msg]
+  })
+
+  return {
+    errors,
+    status: { code: 400 },
+    ...context
+  }
 }
 
-function formatResponse (modelName, context = {}) {
+/**
+ * @param {object} model model to filter
+ * @returns {object} return erros if existis
+ */
+function filterErrorsFromModel (model) {
+  if (!model) {
+    throw new Error('Please provide a model')
+  }
+
+  const errors = {}
+
+  model.fields.forEach(({ name, __errors }) => {
+    if (__errors) {
+      errors[name] = __errors
+    }
+  })
+
+  return Object.keys(errors).length ? errors : undefined
+}
+
+function onSuccessResponse (modelName, context = {}, enableError = true) {
   if (!modelName) {
     throw new Error('Please provide a valid model name.')
   }
@@ -39,7 +73,8 @@ function formatResponse (modelName, context = {}) {
   const response = {
     result: context.result || undefined,
     results: context.results || undefined,
-    count: context.count || undefined
+    count: context.count || undefined,
+    errors: enableError ? (context.errors || filterErrorsFromModel(model)) : undefined
   }
 
   response.fields = filterPrivatesInArray([
@@ -59,4 +94,11 @@ function formatResponse (modelName, context = {}) {
   return response
 }
 
-module.exports = formatResponse
+function filterPrivatesInArray (list) {
+  return list.map(item => filterPrivates(item))
+}
+
+module.exports = {
+  onSuccessResponse,
+  onErrorResponse
+}

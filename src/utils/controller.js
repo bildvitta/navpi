@@ -1,5 +1,3 @@
-const blankTypes = [null, undefined, '']
-
 function notFound (response) {
   return response.status(404).json(status(404, 'Not found'))
 }
@@ -10,7 +8,7 @@ function status (code, text) {
 
 module.exports = function (model, fields) {
   const { createQueryBuilder } = require('typeorm')
-  const formatResponse = require('./formatResponse')
+  const { onSuccessResponse, onErrorResponse } = require('./formatResponse')
 
   return {
     async index (request, response) {
@@ -29,7 +27,7 @@ module.exports = function (model, fields) {
       const count = await queryBuilder.getCount()
       const results = await queryBuilder.skip(offset).take(limit).getMany()
 
-      response.json(formatResponse(model, { request, results, count }))
+      response.json(onSuccessResponse(model, { request, results, count }))
     },
 
     async show (request, response) {
@@ -42,34 +40,27 @@ module.exports = function (model, fields) {
         .getOne()
 
       result
-        ? response.json(formatResponse(model, { request, result }))
+        ? response.json(onSuccessResponse(model, { request, result }))
         : notFound(response)
     },
 
     async create (request, response) {
       const { body } = request
-      const errors = {}
 
-      for (const { name, required } of fields) {
-        if (required && blankTypes.includes(body[name])) {
-          errors[name] = 'Required'
-        }
+      const { validationResult } = require('express-validator')
+      const errors = validationResult(request)
+
+      if (!errors.isEmpty()) {
+        return response.json(onErrorResponse(errors.array()))
       }
 
-      if (Object.keys(errors).length) {
-        response.status(400).json({
-          errors,
-          ...status(400, 'Bad request')
-        })
-      } else {
-        await createQueryBuilder()
-          .insert()
-          .into(model)
-          .values(body)
-          .execute()
+      await createQueryBuilder()
+        .insert()
+        .into(model)
+        .values(body)
+        .execute()
 
-        response.json(status(200, 'Created'))
-      }
+      response.json(status(200, 'Created'))
     },
 
     async update (request, response) {
@@ -77,6 +68,13 @@ module.exports = function (model, fields) {
         body,
         params: { uuid }
       } = request
+
+      const { validationResult } = require('express-validator')
+      const errors = validationResult(request)
+
+      if (!errors.isEmpty()) {
+        return response.json(onErrorResponse(errors.array()))
+      }
 
       await createQueryBuilder(model)
         .update()
@@ -103,7 +101,7 @@ module.exports = function (model, fields) {
     },
 
     async filters (request, response) {
-      return response.json({ fields: formatResponse(model, { request })})
+      return response.json(onSuccessResponse(model, { request }, false))
     }
   }
 }

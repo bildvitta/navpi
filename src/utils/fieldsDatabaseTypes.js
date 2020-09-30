@@ -6,6 +6,7 @@ const types = {
   datetime: 'datetime',
   decimal: 'decimal',
   editor: 'text',
+  email: 'varchar',
   money: 'decimal',
   number: 'int',
   percent: 'decimal',

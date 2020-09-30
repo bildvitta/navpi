@@ -1,6 +1,21 @@
 const seederTypes = {
   boolean: '{{random.boolean}}',
-  text: '{{lorem.sentence}}'
+  checkbox: '{{lorem.word}}',
+  color: '{{internet.color}}',
+  date: '{{date.recent}}',
+  datetime: '{{date.recent}}',
+  decimal: '{{random.float}}',
+  editor: '{{lorem.paragraphs}}',
+  email: '{{internet.email}}',
+  money: '{{commerce.price}}',
+  number: '{{random.number}}',
+  percent: '{{random.float}}',
+  radio: '{{random.word}}',
+  select: '{{random.sentence}}',
+  text: '{{lorem.sentence}}',
+  textarea: '{{random.sentences}}',
+  time: '{{time.recent}}',
+  upload: '{{image.image}}'
 }
 
 function getSeeder (toolbox) {
@@ -24,4 +39,3 @@ module.exports = {
   getSeeder,
   seederTypes
 }
-

@@ -5,14 +5,12 @@
   "bin": {
     "navpi": "bin/navpi"
   },
-  "scripts": {
-    "start": "nodemon src/utils/actions/createActions.js"
-  },
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-query-boolean": "^2.0.0",
+    "express-validator": "^6.6.1",
     "faker": "^5.1.0",
     "gluegun": "latest",
     "lodash": "^4.17.20",
@@ -20,8 +18,5 @@
     "sqlite3": "^5.0.0",
     "typeorm": "^0.2.25",
     "yaml": "^1.10.0"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.4"
   }
 }
