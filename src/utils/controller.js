@@ -22,7 +22,7 @@ module.exports = function (model, fields) {
 
       const formatFilter = require('./formatFilter')(model, search, filters)
 
-      // se passar alguma query que não exista ele retorna sem resultados
+      // se passar alguma query que não exista ele retorna sem resultados sem precisar fazer a query no banco
       if (Array.isArray(formatFilter) && !formatFilter.length) {
         return response.json(onSuccessResponse(model, { request, results: [], count: 0 }))
       }
@@ -33,6 +33,10 @@ module.exports = function (model, fields) {
       const results = await queryBuilder.skip(offset).take(limit).getMany()
 
       response.json(onSuccessResponse(model, { request, results, count }))
+    },
+
+    async onNew (request, response) {
+      return response.json(onSuccessResponse(model, { request }))
     },
 
     async show (request, response) {
@@ -78,7 +82,7 @@ module.exports = function (model, fields) {
       const errors = validationResult(request)
 
       if (!errors.isEmpty()) {
-        return response.json(onErrorResponse(errors.array()))
+        return response.status(400).json(onErrorResponse(errors.array()))
       }
 
       await createQueryBuilder(model)
