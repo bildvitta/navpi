@@ -39,11 +39,13 @@ function filterErrorsFromModel (model) {
 
   const errors = {}
 
-  model.fields.forEach(({ name, __errors }) => {
-    if (__errors) {
-      errors[name] = __errors
+  for (const key in model.fields) {
+    const error = model.fields[key].__errors
+
+    if (error) {
+      errors[key] = error
     }
-  })
+  }
 
   return Object.keys(errors).length ? errors : undefined
 }
@@ -77,10 +79,10 @@ function onSuccessResponse (modelName, context = {}, enableError = true) {
     errors: enableError ? (context.errors || filterErrorsFromModel(model)) : undefined
   }
 
-  response.fields = filterPrivatesInArray([
-    ...(model.fields || []),
-    ...(context.fields || [])
-  ])
+  response.fields = filterPrivatesInObject({
+    ...(model.fields || {}),
+    ...(context.fields || {})
+  })
 
   response.metadata = run({
     ...(model.metadata || {}),
@@ -94,8 +96,14 @@ function onSuccessResponse (modelName, context = {}, enableError = true) {
   return response
 }
 
-function filterPrivatesInArray (list) {
-  return list.map(item => filterPrivates(item))
+function filterPrivatesInObject (object) {
+  const fields = {}
+
+  for (const key in object) {
+    fields[key] = { ...filterPrivates(object[key]) }
+  }
+
+  return fields
 }
 
 module.exports = {

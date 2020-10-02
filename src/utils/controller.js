@@ -20,14 +20,24 @@ module.exports = function (model, fields) {
         ...filters
        } = request.query
 
-      const formatFilter = require('./formatFilter')
+      const formatFilter = require('./formatFilter')(model, search, filters)
 
-      const queryBuilder = createQueryBuilder(model).where(formatFilter(model, search, filters))
+      // if request send some query that does not exist it will return empty results with out make a query in databasei
+      // if we send a wrong query to "where" it will returns all results
+      if (Array.isArray(formatFilter) && !formatFilter.length) {
+        return response.json(onSuccessResponse(model, { request, results: [], count: 0 }))
+      }
+
+      const queryBuilder = createQueryBuilder(model).where(formatFilter)
 
       const count = await queryBuilder.getCount()
       const results = await queryBuilder.skip(offset).take(limit).getMany()
 
       response.json(onSuccessResponse(model, { request, results, count }))
+    },
+
+    async options (request, response) {
+      return response.json(onSuccessResponse(model, { request }))
     },
 
     async show (request, response) {
@@ -51,7 +61,7 @@ module.exports = function (model, fields) {
       const errors = validationResult(request)
 
       if (!errors.isEmpty()) {
-        return response.json(onErrorResponse(errors.array()))
+        return response.status(400).json(onErrorResponse(errors.array()))
       }
 
       await createQueryBuilder()
@@ -69,18 +79,25 @@ module.exports = function (model, fields) {
         params: { uuid }
       } = request
 
+      const { getRepository } = require('typeorm')
+
+      const itemRepository = getRepository(model)
+      let item = await itemRepository.findOne(uuid)
+
+      if (!item) {
+        return notFound(response)
+      }
+
       const { validationResult } = require('express-validator')
       const errors = validationResult(request)
 
       if (!errors.isEmpty()) {
-        return response.json(onErrorResponse(errors.array()))
+        return response.status(400).json(onErrorResponse(errors.array()))
       }
 
-      await createQueryBuilder(model)
-        .update()
-        .set(body)
-        .where(`${model}.uuid = :uuid`, { uuid })
-        .execute()
+      item = { ...body }
+
+      await itemRepository.save(item)
 
       response.json(status(200, 'Updated'))
     },
