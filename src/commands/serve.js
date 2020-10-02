@@ -24,12 +24,12 @@ module.exports = {
     // Actions
     for (const model in models) {
       const {
-        create, destroy, index, update, show, filters, onNew
+        create, destroy, index, update, show, filters, options
       } = require('../utils/controller')(model, models[model].fields)
 
       addRoutes([
         { path: `/${model}`, method: 'get', action: index, model },
-        { path: `/${model}/new`, method: 'get', action: onNew, model },
+        { path: `/${model}/new`, method: 'get', action: options, model },
         { path: `/${model}/filters`, method: 'get', action: filters, model },
         { path: `/${model}/:uuid`, method: 'get', action: show, model },
         { path: `/${model}/:uuid/edit`, method: 'get', action: show, model },

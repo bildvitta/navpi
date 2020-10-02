@@ -36,7 +36,7 @@ module.exports = function (model, fields) {
       response.json(onSuccessResponse(model, { request, results, count }))
     },
 
-    async onNew (request, response) {
+    async options (request, response) {
       return response.json(onSuccessResponse(model, { request }))
     },
 
