@@ -4,23 +4,26 @@ function formatFilter (modelName, search, filters) {
   }
 
   const model = require('./models').getModel(modelName)
+  const fields = model.fields
+
   const searchLikeTypes = ['text', 'textarea', 'email']
 
   const formattedFilters = []
 
   const { Like } = require('typeorm')
 
-  model.fields.forEach((item, index) => {
-    if (item.__search) {
-      return formattedFilters.push({ [item.name]: Like(`%${search || filters[item.name]}%`) })
+  for (const key in fields) {
+    if (fields[key].__search) {
+      formattedFilters.push({ [key]: Like(`%${search || filters[key]}%`) })
+      continue
     }
 
-    if (Object.prototype.hasOwnProperty.call(filters, item.name)) {
-      return formattedFilters.push({
-        [item.name]: searchLikeTypes.includes(item.type) ? Like(`%${filters[item.name]}%`) : filters[item.name]
+    if (Object.prototype.hasOwnProperty.call(filters, key)) {
+      formattedFilters.push({
+        [key]: searchLikeTypes.includes(fields[key].type) ? Like(`%${filters[key]}%`) : filters[key]
       })
     }
-  })
+  }
 
   return formattedFilters
 }

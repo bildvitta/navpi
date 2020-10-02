@@ -15,11 +15,13 @@ module.exports = {
     const { connection, models } = await getConnection(toolbox)
 
     function getValue (model) {
+      model = models[model].fields
+
       const value = {}
 
-      for (const field of models[model].fields) {
-        value[field.name] = seeder(
-          seeder(field.__value || seederTypes[field.type])
+      for (const key in model) {
+        value[key] = seeder(
+          seeder(model[key].__value || seederTypes[model[key].type])
         )
       }
 

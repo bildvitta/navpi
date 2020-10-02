@@ -16,16 +16,16 @@ function getEntityByModelName (name) {
     uuid: { generated: 'uuid', primary: true, type: 'varchar' }
   }
 
-  for (const field of fields) {
+  for (const field in fields) {
     const column = {
-      type: getDatabaseTypeByField(field.type)
+      type: getDatabaseTypeByField(fields[field].type)
     }
 
-    if (!field.required) {
+    if (!fields[field].required) {
       column.nullable = true
     }
 
-    columns[field.name] = column
+    columns[fields[field].name] = column
   }
 
   return {
