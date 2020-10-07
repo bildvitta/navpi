@@ -13,9 +13,10 @@ module.exports = {
 
     const getConnection = require('../utils/connection')
     const { connection, models } = await getConnection(toolbox)
+    const { getFieldsWithNoRelationByName } = require('../utils/models')
 
     function getValue (model) {
-      fields = models[model].fields
+      const fields = getFieldsWithNoRelationByName(model)
 
       const value = {}
 
@@ -48,6 +49,7 @@ module.exports = {
         await seed(model, getValues(model))
         spinner.succeed(`${modelName} was seeded.`)
       } catch (error) {
+        throw new Error(error)
         spinner.fail(`Error seeding ${modelName}.`)
       }
     }

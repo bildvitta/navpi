@@ -9,6 +9,7 @@ function status (code, text) {
 module.exports = function (model, fields) {
   const { createQueryBuilder } = require('typeorm')
   const { onSuccessResponse, onErrorResponse } = require('./formatResponse')
+  const { getReleationsByModelName } = require('./models')
 
   return {
     async index (request, response) {
@@ -44,6 +45,21 @@ module.exports = function (model, fields) {
       const {
         params: { uuid }
       } = request
+
+      const { getRepository } = require('typeorm')
+      const fieldsWithRelations = getReleationsByModelName(model)
+      const relations = []
+      const options = {}
+
+      for (const key in fieldsWithRelations) {
+        relations.push(key)
+        options[key] = await createQueryBuilder(key).getMany()
+      }
+
+      console.log(options)
+
+      const user = await getRepository('users').findOne({ where: { uuid }, relations: ['category', 'posts'] })
+      // console.log(user)
 
       const result = await createQueryBuilder(model)
         .where(`${model}.uuid = :uuid`, { uuid })

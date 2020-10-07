@@ -8,9 +8,53 @@ function getModel (name) {
   return models[name]
 }
 
+function getReleationsByModelName (name) {
+  const relations = {}
+  const { fields } = getModel(name)
+
+  for (const key in fields) {
+    if (fields[key].__relation) {
+      relations[key] = fields[key]
+    }
+  }
+
+  return relations
+}
+
+function getFieldsWithNoRelationByName (name) {
+  const fields = getModel(name).fields
+  const formattedFields = {}
+
+  for (const key in fields) {
+    if (!fields[key].__relation) {
+      formattedFields[key] = fields[key]
+    }
+  }
+
+  return formattedFields
+}
+
+function hasRelation (name) {
+  return Object.keys(getReleationsByModelName(name)).length
+}
+
+function formatRelations (name) {
+  const formatted = {}
+  const relations = {
+    checkbox: { type: 'many-to-many', joinTable: true, cascade: true },
+    select: { type: 'one-to-one', joinColumn: true }
+  }
+
+  for (const key in getReleationsByModelName(name)) {
+    formatted[key] = { ...relations[getReleationsByModelName(name)[key].type], target: key }
+  }
+
+  return formatted
+}
+
 function getEntityByModelName (name) {
   const { getDatabaseTypeByField } = require('./fieldsDatabaseTypes')
-  const { fields } = models[name]
+  const fields = getFieldsWithNoRelationByName(name)
 
   const columns = {
     uuid: { generated: 'uuid', primary: true, type: 'varchar' }
@@ -30,7 +74,8 @@ function getEntityByModelName (name) {
 
   return {
     name,
-    columns
+    columns,
+    relations: formatRelations(name)
   }
 }
 
@@ -56,8 +101,9 @@ function loadModels ({ filesystem }) {
     const [name, extension] = path.replace(`${modelsDirectory}/`, '').split('.')
 
     const contents = ['yaml', 'yml'].includes(extension)
-      ? YAML.parse(filesystem.read(path))
-      : extension === 'js' ? require(path) : filesystem.read(path, 'json')
+
+    ? YAML.parse(filesystem.read(path))
+    : extension === 'js' ? require(path) : filesystem.read(path, 'json')
 
     addModel(name, contents)
   }
@@ -70,6 +116,11 @@ module.exports = {
 
   addModel,
   getModel,
+
+  getReleationsByModelName,
+  formatRelations,
+  hasRelation,
+  getFieldsWithNoRelationByName,
 
   getEntityByModelName,
   loadModels
