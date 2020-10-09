@@ -9,7 +9,7 @@ function status (code, text) {
 module.exports = function (model, fields) {
   const { createQueryBuilder } = require('typeorm')
   const { onSuccessResponse, onErrorResponse } = require('./formatResponse')
-  const { getReleationsByModelName } = require('./models')
+  const { getReleationsByModelName, formatRelations } = require('./relations')
 
   return {
     async index (request, response) {
@@ -29,10 +29,27 @@ module.exports = function (model, fields) {
         return response.json(onSuccessResponse(model, { request, results: [], count: 0 }))
       }
 
-      const queryBuilder = createQueryBuilder(model).where(formatFilter)
+      // const queryBuilder = createQueryBuilder(model).where(formatFilter)
 
-      const count = await queryBuilder.getCount()
-      const results = await queryBuilder.skip(offset).take(limit).getMany()
+      // const count = await queryBuilder.getCount()
+      // const results = await queryBuilder.skip(offset).take(limit).getMany()
+
+      const { getRepository } = require('typeorm')
+      const fieldsWithRelations = getReleationsByModelName(model)
+      const relations = []
+      const options = {}
+    
+      for (const key in fieldsWithRelations) {
+        relations.push(key)
+        options[key] = await createQueryBuilder(key).getMany()
+      }
+
+      const [results, count] = await getRepository(model).findAndCount({
+        relations,
+        where: formatFilter,
+        skip: offset,
+        take: limit
+      })
 
       response.json(onSuccessResponse(model, { request, results, count }))
     },
@@ -56,17 +73,10 @@ module.exports = function (model, fields) {
         options[key] = await createQueryBuilder(key).getMany()
       }
 
-      console.log(options)
-
-      const user = await getRepository('users').findOne({ where: { uuid }, relations: ['category', 'posts'] })
-      // console.log(user)
-
-      const result = await createQueryBuilder(model)
-        .where(`${model}.uuid = :uuid`, { uuid })
-        .getOne()
+      const result = await getRepository(model).findOne({ where: { uuid }, relations })
 
       result
-        ? response.json(onSuccessResponse(model, { request, result }))
+        ? response.json(onSuccessResponse(model, { request, result, options }))
         : notFound(response)
     },
 
@@ -95,10 +105,19 @@ module.exports = function (model, fields) {
         params: { uuid }
       } = request
 
-      const { getRepository } = require('typeorm')
+      const { formatBody } = require('../utils/relations')
 
-      const itemRepository = getRepository(model)
-      let item = await itemRepository.findOne(uuid)
+      const { getRepository } = require('typeorm')
+      const fieldsWithRelations = getReleationsByModelName(model)
+      const relations = []
+      const options = {}
+
+      for (const key in fieldsWithRelations) {
+        relations.push(key)
+        options[key] = await createQueryBuilder(key).getMany()
+      }
+
+      let item = await getRepository(model).findOne({ where: { uuid }, relations, options })
 
       if (!item) {
         return notFound(response)
@@ -111,9 +130,9 @@ module.exports = function (model, fields) {
         return response.status(400).json(onErrorResponse(errors.array()))
       }
 
-      item = { ...body }
+      item = { ...formatBody(model, body) }
 
-      await itemRepository.save(item)
+      await getRepository(model).save(item)
 
       response.json(status(200, 'Updated'))
     },

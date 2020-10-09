@@ -13,7 +13,7 @@ module.exports = {
 
     const getConnection = require('../utils/connection')
     const { connection, models } = await getConnection(toolbox)
-    const { getFieldsWithNoRelationByName } = require('../utils/models')
+    const { getFieldsWithNoRelationByName } = require('../utils/relations')
 
     function getValue (model) {
       const fields = getFieldsWithNoRelationByName(model)

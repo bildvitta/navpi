@@ -8,52 +8,60 @@ function getModel (name) {
   return models[name]
 }
 
-function getReleationsByModelName (name) {
-  const relations = {}
-  const { fields } = getModel(name)
+// function getReleationsByModelName (name) {
+//   const relations = {}
+//   const { fields } = getModel(name)
 
-  for (const key in fields) {
-    if (fields[key].__relation) {
-      relations[key] = fields[key]
-    }
-  }
+//   for (const key in fields) {
+//     if (fields[key].__relation) {
+//       relations[key] = fields[key]
+//     }
+//   }
 
-  return relations
-}
+//   return relations
+// }
 
-function getFieldsWithNoRelationByName (name) {
-  const fields = getModel(name).fields
-  const formattedFields = {}
+// function getFieldsWithNoRelationByName (name) {
+//   const fields = getModel(name).fields
+//   const formattedFields = {}
 
-  for (const key in fields) {
-    if (!fields[key].__relation) {
-      formattedFields[key] = fields[key]
-    }
-  }
+//   for (const key in fields) {
+//     if (!fields[key].__relation) {
+//       formattedFields[key] = fields[key]
+//     }
+//   }
 
-  return formattedFields
-}
+//   return formattedFields
+// }
 
-function hasRelation (name) {
-  return Object.keys(getReleationsByModelName(name)).length
-}
+// function hasRelation (name) {
+//   return Object.keys(getReleationsByModelName(name)).length
+// }
 
-function formatRelations (name) {
-  const formatted = {}
-  const relations = {
-    checkbox: { type: 'many-to-many', joinTable: true, cascade: true },
-    select: { type: 'one-to-one', joinColumn: true }
-  }
+// function formatRelations (name) {
+//   const formatted = {}
+//   const relations = {
+//     manyToMany: { type: 'many-to-many', joinTable: true, cascade: true },
+//     oneToOne: { type: 'one-to-one', joinColumn: true }
+//   }
 
-  for (const key in getReleationsByModelName(name)) {
-    formatted[key] = { ...relations[getReleationsByModelName(name)[key].type], target: key }
-  }
+//   for (const key in getReleationsByModelName(name)) {
+//     const relation = getReleationsByModelName(name)[key]
 
-  return formatted
-}
+//     const relationType = (relation.type === 'select' && relation.multiple) || relation.type === 'checkbox'
+//       ? 'manyToMany'
+//       : 'oneToOne'
+
+//     formatted[key] = { ...relations[relationType], target: key }
+//   }
+
+//   return formatted
+// }
 
 function getEntityByModelName (name) {
   const { getDatabaseTypeByField } = require('./fieldsDatabaseTypes')
+  const { getFieldsWithNoRelationByName, formatRelations } = require('./relations')
+
   const fields = getFieldsWithNoRelationByName(name)
 
   const columns = {
@@ -117,10 +125,10 @@ module.exports = {
   addModel,
   getModel,
 
-  getReleationsByModelName,
-  formatRelations,
-  hasRelation,
-  getFieldsWithNoRelationByName,
+  // getReleationsByModelName,
+  // formatRelations,
+  // hasRelation,
+  // getFieldsWithNoRelationByName,
 
   getEntityByModelName,
   loadModels

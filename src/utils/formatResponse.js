@@ -50,6 +50,50 @@ function filterErrorsFromModel (model) {
   return Object.keys(errors).length ? errors : undefined
 }
 
+function formatFieldsOptions (modelName, options) {
+  if (!options) {
+    return null
+  }
+
+  const { getReleationsByModelName } = require('./relations')
+  const fieldsWithRelations = getReleationsByModelName(modelName)
+
+  for (const key in fieldsWithRelations) {
+    fieldsWithRelations[key].options = formatOptions(fieldsWithRelations[key].__relationLabel, options[key])
+  }
+
+  return fieldsWithRelations
+}
+
+function formatOptions (model, options) {
+  return options.map(option => {
+    return {
+      label: option[model],
+      value: option['uuid']
+    }
+  })
+}
+
+function formatResult (modelName, result) {
+  const { getReleationsByModelName } = require('./relations')
+  const relationFields = getReleationsByModelName(modelName)
+
+  for (const key in result) {
+    if (relationFields[key] && result[key]) {
+      if (relationFields[key].type === 'select' && !relationFields[key].multiple) {
+        result[key] = result[key].uuid
+        continue
+      }
+
+      result[key] = result[key].map(item => item.uuid)
+    }
+  }
+}
+
+function formatResults (modelName, results) {
+  return (results || []).map(result => formatResult(modelName, result))
+}
+
 function onSuccessResponse (modelName, context = {}, enableError = true) {
   if (!modelName) {
     throw new Error('Please provide a valid model name.')
@@ -81,8 +125,12 @@ function onSuccessResponse (modelName, context = {}, enableError = true) {
 
   response.fields = filterPrivatesInObject({
     ...(model.fields || {}),
+    ...(formatFieldsOptions(modelName, context.options) || {}),
     ...(context.fields || {})
   })
+
+  formatResult(modelName, context.result)
+  formatResults(modelName, context.results)
 
   response.metadata = run({
     ...(model.metadata || {}),
