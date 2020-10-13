@@ -2,7 +2,9 @@ const { getModel } = require('./models')
 
 const relationsType = {
   'many-to-many': (list) => updateManyToMany(list),
-  'one-to-one': (uuid) => updateOneToOne(uuid)
+  'one-to-one': (uuid) => updateOneToOne(uuid),
+  'many-to-one': (uuid) => updateOneToOne(uuid),
+  'one-to-many': (uuid) => updateOneToOne(uuid)
 }
 
 function updateManyToMany (list) {
@@ -14,8 +16,8 @@ function updateOneToOne (uuid) {
 }
 
 function formatBody (modelName, body) {
-  const { formatRelations } = require('./models')
   const relations = formatRelations(modelName)
+  console.log(relations)
 
   for (const key in body) {
     if (relations[key]) {
@@ -26,7 +28,22 @@ function formatBody (modelName, body) {
   return body
 }
 
-function
+async function getRelationsListAndOptions (name, { result, results } = {}) {
+  const { createQueryBuilder } = require('typeorm')
+  const fieldsWithRelations = getReleationsByModelName(name)
+  const relations = []
+  const options = {}
+
+  for (const key in fieldsWithRelations) {
+    relations.push(key)
+    options[key] = await createQueryBuilder(key).getMany()
+  }
+
+  return {
+    relations,
+    options
+  }
+}
 
 // ------------------------------------------------
 function getReleationsByModelName (name) {
@@ -63,7 +80,9 @@ function formatRelations (name) {
   const formatted = {}
   const relations = {
     manyToMany: { type: 'many-to-many', joinTable: true, cascade: true },
-    oneToOne: { type: 'one-to-one', joinColumn: true }
+    oneToOne: { type: 'one-to-one', joinColumn: true },
+    manyToOne: { type: 'many-to-one', joinColumn: true },
+    oneToMany: { type: 'one-to-many' }
   }
 
   for (const key in getReleationsByModelName(name)) {
@@ -73,7 +92,8 @@ function formatRelations (name) {
       ? 'manyToMany'
       : 'oneToOne'
 
-    formatted[key] = { ...relations[relationType], target: key }
+    // formatted[key] = { ...relations[relationType], target: key }
+    formatted[key] = { ...relations[relation.__relationType], target: key }
   }
 
   return formatted
@@ -86,4 +106,5 @@ module.exports = {
   formatRelations,
   hasRelation,
   getFieldsWithNoRelationByName,
+  getRelationsListAndOptions
 }
