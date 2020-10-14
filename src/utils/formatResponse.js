@@ -156,5 +156,7 @@ function filterPrivatesInObject (object) {
 
 module.exports = {
   onSuccessResponse,
-  onErrorResponse
+  onErrorResponse,
+  formatResult,
+  formatResults
 }

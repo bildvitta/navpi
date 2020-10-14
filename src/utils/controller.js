@@ -31,11 +31,6 @@ module.exports = function (model, fields) {
         return response.json(onSuccessResponse(model, { request, results: [], count: 0 }))
       }
 
-      // const queryBuilder = createQueryBuilder(model).where(formatFilter)
-
-      // const count = await queryBuilder.getCount()
-      // const results = await queryBuilder.skip(offset).take(limit).getMany()
-
       const { getRepository } = require('typeorm')
       const fieldsWithRelations = getReleationsByModelName(model)
       const relations = []
@@ -59,11 +54,6 @@ module.exports = function (model, fields) {
     async options (request, response) {
       const { getRelationsListAndOptions } = require('../utils/relations')
       const { options, relations } = await getRelationsListAndOptions(model)
-      const { getRepository } = require('typeorm')
-
-      const result = getRepository(model).find({ relations })
-
-      console.log(result)
 
       return response.json(onSuccessResponse(model, { request, options }))
     },
@@ -75,13 +65,8 @@ module.exports = function (model, fields) {
 
       const { getRepository } = require('typeorm')
       const fieldsWithRelations = getReleationsByModelName(model)
-      const relations = []
-      const options = {}
-
-      for (const key in fieldsWithRelations) {
-        relations.push(key)
-        options[key] = await createQueryBuilder(key).getMany()
-      }
+      const { getRelationsListAndOptions } = require('../utils/relations')
+      const { options, relations } = await getRelationsListAndOptions(model)
 
       const result = await getRepository(model).findOne({ where: { uuid }, relations })
 
@@ -104,12 +89,6 @@ module.exports = function (model, fields) {
       const itemRepository = getRepository(model)
       const item = itemRepository.create({ ...formatBody(model, body) })
       await itemRepository.save(item)
-
-      // await createQueryBuilder()
-      //   .insert()
-      //   .into(model)
-      //   .values(body)
-      //   .execute()
 
       response.json(status(200, 'Created'))
     },

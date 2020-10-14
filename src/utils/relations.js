@@ -1,23 +1,22 @@
 const { getModel } = require('./models')
 
 const relationsType = {
-  'many-to-many': (list) => updateManyToMany(list),
-  'one-to-one': (uuid) => updateOneToOne(uuid),
-  'many-to-one': (uuid) => updateOneToOne(uuid),
-  'one-to-many': (uuid) => updateOneToOne(uuid)
+  'many-to-many': list => formatList(list),
+  'one-to-one': uuid => formatSingle(uuid),
+  'many-to-one': uuid => formatSingle(uuid),
+  'one-to-many': uuid => formatSingle(uuid)
 }
 
-function updateManyToMany (list) {
+function formatList (list) {
   return list.map(item => { return { uuid: item } })
 }
 
-function updateOneToOne (uuid) {
-  return { uuid } || uuid
+function formatSingle (uuid) {
+  return uuid ? { uuid } : uuid
 }
 
 function formatBody (modelName, body) {
   const relations = formatRelations(modelName)
-  console.log(relations)
 
   for (const key in body) {
     if (relations[key]) {
@@ -86,19 +85,11 @@ function formatRelations (name) {
   }
 
   for (const key in getReleationsByModelName(name)) {
-    const relation = getReleationsByModelName(name)[key]
-
-    const relationType = (relation.type === 'select' && relation.multiple) || relation.type === 'checkbox'
-      ? 'manyToMany'
-      : 'oneToOne'
-
-    // formatted[key] = { ...relations[relationType], target: key }
-    formatted[key] = { ...relations[relation.__relationType], target: key }
+    formatted[key] = { ...relations[getReleationsByModelName(name)[key].__relationType], target: key }
   }
 
   return formatted
 }
-
 
 module.exports = {
   formatBody,
