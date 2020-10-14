@@ -80,7 +80,7 @@ module.exports = {
       name: 'email',
       type: 'email',
 	  label: 'E-mall',
-	  required: true
+	  required: true,
 	  __errors: ['Invalid e-mail'] // field email starts with error
     },
 
@@ -145,18 +145,18 @@ If we create a request `GET` to `http://localhost:5051/users` it will return som
 {
   "results": [
     {
-      "uuid": "0e043bd8-544b-482d-bc57-7791914933aa",
-      "email": "Vada_DAmore70@yahoo.com",
-      "name": "Similique quo perspiciatis nobis sed non beatae.",
+      "uuid": "03b84618-cc85-4bb1-a163-ec39580eb870",
+      "email": "Natalie39@gmail.com",
+      "name": "Voluptates ea et distinctio omnis consequuntur pariatur beatae hic.",
       "city": "cravinhos",
       "posts": [],
       "companies": null,
       "category": null
     },
     {
-      "uuid": "11e9e50e-1daf-478e-9458-b8a9c418014e",
-      "email": "Penelope85@yahoo.com",
-      "name": "Facilis dolor quo vero totam enim odit totam dolores.",
+      "uuid": "081db3e5-6b67-414b-9235-933fdbf670e8",
+      "email": "Karlie_OKeefe54@gmail.com",
+      "name": "Et exercitationem modi consequatur saepe ducimus praesentium mollitia non.",
       "city": "cravinhos",
       "posts": [],
       "companies": null,
@@ -164,16 +164,23 @@ If we create a request `GET` to `http://localhost:5051/users` it will return som
     }
   ],
   "count": 2,
+  "errors": {
+    "email": [
+      "Invalid e-mail"
+    ]
+  },
   "fields": {
     "email": {
       "name": "email",
       "type": "email",
-      "label": "E-mall"
+      "label": "E-mall",
+      "required": true
     },
     "name": {
       "name": "name",
       "type": "text",
-      "label": "Nome"
+      "label": "Nome",
+      "minLength": 3
     },
     "city": {
       "name": "city",
@@ -197,12 +204,12 @@ If we create a request `GET` to `http://localhost:5051/users` it will return som
       "multiple": true,
       "options": [
         {
-          "label": "Neque quis enim.",
-          "value": "9fa42fbd-78ef-45d6-92bd-16d213e74dbd"
+          "label": "Nihil rerum aut.",
+          "value": "99f21e3e-e448-4184-8f0c-8000bedb194e"
         },
         {
-          "label": "Ab aspernatur qui qui inventore laborum vero impedit.",
-          "value": "789985cc-d781-40c0-8b6f-86290185959c"
+          "label": "Rerum facilis fugit.",
+          "value": "2a8e62d3-9086-43de-ade0-c85aaf334f35"
         }
       ]
     },
@@ -212,16 +219,16 @@ If we create a request `GET` to `http://localhost:5051/users` it will return som
       "label": "Empresas",
       "options": [
         {
-          "label": "Amet dolorem quo repellat officiis iusto excepturi ipsa iusto.",
-          "value": "a1c44b37-889e-4bfa-b39f-46e6fef5ef1d"
+          "label": "Quae eveniet aliquam.",
+          "value": "347179b4-905e-4376-be16-dd5db7296351"
         },
         {
-          "label": "Sapiente quae dignissimos saepe magnam iusto.",
-          "value": "ad7ae2ce-e6f4-4194-9e05-56b1563d0eb7"
+          "label": "Sed architecto facilis culpa corporis nulla voluptatem.",
+          "value": "8307bab2-29cb-483d-bc49-259a9cdf6cb2"
         },
         {
-          "label": "Necessitatibus non dolor dolorum molestias cupiditate.",
-          "value": "cb3cf784-fa4a-4cb2-813a-392127f813fe"
+          "label": "Aperiam eum molestiae.",
+          "value": "08d1b0c7-2ba5-4630-aa9d-18d26d3d5691"
         }
       ]
     },
@@ -231,20 +238,16 @@ If we create a request `GET` to `http://localhost:5051/users` it will return som
       "label": "Categorias",
       "options": [
         {
-          "label": "Et dicta suscipit ullam in tenetur aut labore porro minima.",
-          "value": "55b879d7-90dd-4ed1-9847-5c20c1dbbc73"
+          "label": "Consequuntur et rerum.",
+          "value": "d0be651d-3fef-457b-99f3-174fd3770b19"
         },
         {
-          "label": "Odio tenetur dolor id omnis incidunt adipisci maxime ullam.",
-          "value": "b4619d14-c486-4366-bab4-1a04ca863a2c"
+          "label": "Voluptas omnis corrupti.",
+          "value": "e3fa103e-b0c1-4a1d-bd4e-dfdc4d7b8695"
         },
         {
-          "label": "Quam numquam aut.",
-          "value": "b9703268-e786-424f-b1cc-421724f855a4"
-        },
-        {
-          "label": "Sint nesciunt commodi ut enim cum minus ex.",
-          "value": "bc2b3121-ee13-4efc-ab49-565351e40f4a"
+          "label": "Sunt magni rem aut fugiat ullam iure.",
+          "value": "0d258cb2-05aa-4fc1-a21b-35076540feb7"
         }
       ]
     }
