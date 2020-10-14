@@ -32,14 +32,8 @@ module.exports = function (model, fields) {
       }
 
       const { getRepository } = require('typeorm')
-      const fieldsWithRelations = getReleationsByModelName(model)
-      const relations = []
-      const options = {}
-    
-      for (const key in fieldsWithRelations) {
-        relations.push(key)
-        options[key] = await createQueryBuilder(key).getMany()
-      }
+      const { getRelationsListAndOptions } = require('../utils/relations')
+      const { options, relations } = await getRelationsListAndOptions(model)
 
       const [results, count] = await getRepository(model).findAndCount({
         relations,
@@ -48,7 +42,7 @@ module.exports = function (model, fields) {
         take: limit
       })
 
-      response.json(onSuccessResponse(model, { request, results, count }))
+      response.json(onSuccessResponse(model, { request, results, count, options }))
     },
 
     async options (request, response) {
