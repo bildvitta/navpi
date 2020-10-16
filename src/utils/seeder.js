@@ -9,6 +9,7 @@ const seederTypes = {
   email: '{{internet.email}}',
   money: '{{commerce.price}}',
   number: '{{random.number}}',
+  password: '{{internet.password}}',
   percent: '{{random.float}}',
   radio: '{{lorem.word}}',
   select: '{{lorem.sentence}}',

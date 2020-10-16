@@ -9,6 +9,7 @@ const types = {
   email: 'varchar',
   money: 'decimal',
   number: 'int',
+  password: 'text',
   percent: 'decimal',
   radio: 'varchar',
   select: 'varchar',
@@ -20,7 +21,7 @@ const types = {
 
 /**
  * Function that returns a field type based database type.
- * 
+ *
  * @param {string} fieldType Field type.
  * @returns {string} Database type.
  */
