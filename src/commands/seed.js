@@ -21,9 +21,14 @@ module.exports = {
       const value = {}
 
       for (const key in fields) {
-        value[key] = seeder(
-          seeder(fields[key].__value || seederTypes[fields[key].type])
-        )
+        if(fields[key].__randomValues && Array.isArray(fields[key].__randomValues)){
+          let randomValue = fields[key].__randomValues[Math.floor(Math.random() * fields[key].__randomValues.length)]
+          value[key] = seeder(randomValue)
+        }else{
+          value[key] = seeder(
+            seeder(fields[key].__value || seederTypes[fields[key].type])
+          )
+        }
       }
 
       return value
