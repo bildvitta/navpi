@@ -59,7 +59,7 @@ function formatFieldsOptions (modelName, options) {
   const fieldsWithRelations = getReleationsByModelName(modelName)
 
   for (const key in fieldsWithRelations) {
-    fieldsWithRelations[key].options = formatOptions(fieldsWithRelations[key].__relationLabel, options[key])
+    fieldsWithRelations[key].options = formatOptions(fieldsWithRelations[key].__relation_label, options[key])
   }
 
   return fieldsWithRelations

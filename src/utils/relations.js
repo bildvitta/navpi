@@ -85,7 +85,7 @@ function formatRelations (name) {
   }
 
   for (const key in getReleationsByModelName(name)) {
-    formatted[key] = { ...relations[getReleationsByModelName(name)[key].__relationType], target: key }
+    formatted[key] = { ...relations[getReleationsByModelName(name)[key].__relation_type], target: key }
   }
 
   return formatted
