@@ -82,24 +82,6 @@ function hasRelation (name) {
   return Object.keys(getReleationsByModelName(name)).length
 }
 
-function formatRelations (name) {
-  const formatted = {}
-  const relations = {
-    manyToMany: { type: 'many-to-many', joinTable: true, cascade: true },
-    oneToOne: { type: 'one-to-one' },
-    manyToOne: { type: 'many-to-one', joinColumn: true },
-    oneToMany: { type: 'one-to-many', inverseSide: 'companies_domains', joinColumn: true }
-  }
-
-  for (const key in getReleationsByModelName(name)) {
-    const relation = getReleationsByModelName(name)
-
-    formatted[key] = { ...relations[getReleationsByModelName(name)[key].__relation_type], target: key }
-  }
-
-  return formatted
-}
-
 function formatRelationByModelName (name) {
   const relation = {}
 
@@ -134,37 +116,20 @@ function getRelations (name) {
   for (const key in relations) {
     if (Object.keys(relations[key]).length) {
       for (const relationKey in relations[key]) {
-        const model = relations[key][relationKey].multiple ? 'manyToMany' : 'manyToOne'
+        const isMultiple = relations[key][relationKey].multiple
+        const model = isMultiple ? 'manyToMany' : 'manyToOne'
 
         relationsTypes[model][key] = [
           relationKey,
           ...(relationsTypes[model][key] || [])
         ]
-        // relationsTypes[relations[key][relationKey].__relation_type][key] = [
-        //   relationKey,
-        //   ...(relationsTypes[relations[key][relationKey].__relation_type][key] || [])
-        // ]
 
-        relationsTypes['oneToMany'][relationKey] = [
-          key,
-          ...(relationsTypes['oneToMany'][relationKey] || [])
-        ]
-
-        // if (relations[key][relationKey].__relation_type === 'oneToMany') {
-        //   relationsTypes['manyToOne'][relationKey] = [
-        //     key,
-        //     ...(relationsTypes['manyToOne'][relationKey] || [])
-        //   ]
-
-        //   continue
-        // }
-
-        // if (relations[key][relationKey].__relation_type === 'manyToOne') {
-        //   relationsTypes['oneToMany'][relationKey] = [
-        //     key,
-        //     ...(relationsTypes['oneToMany'][relationKey] || [])
-        //   ]
-        // }
+        if (!isMultiple) {
+          relationsTypes['oneToMany'][relationKey] = [
+            key,
+            ...(relationsTypes['oneToMany'][relationKey] || [])
+          ]
+        }
       }
     }
   }
@@ -176,7 +141,6 @@ module.exports = {
   getRelations,
   formatBody,
   getReleationsByModelName,
-  formatRelations,
   hasRelation,
   getFieldsWithNoRelationByName,
   getRelationsListAndOptions

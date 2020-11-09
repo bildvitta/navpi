@@ -10,7 +10,7 @@ function getModel (name) {
 
 function getEntityByModelName (name) {
   const { getDatabaseTypeByField } = require('./fieldsDatabaseTypes')
-  const { getFieldsWithNoRelationByName, formatRelations, formatRelationByModelName } = require('./relations')
+  const { getFieldsWithNoRelationByName, formatRelationByModelName } = require('./relations')
 
   const fields = getFieldsWithNoRelationByName(name)
 

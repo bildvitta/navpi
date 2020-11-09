@@ -11,7 +11,7 @@ function status (code, text) {
 module.exports = function (model, fields) {
   const { createQueryBuilder } = require('typeorm')
   const { onSuccessResponse, onErrorResponse } = require('./formatResponse')
-  const { getReleationsByModelName, formatRelations } = require('./relations')
+  const { getReleationsByModelName } = require('./relations')
 
   return {
     async index (request, response) {
