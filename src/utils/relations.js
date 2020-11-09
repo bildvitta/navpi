@@ -1,3 +1,10 @@
+const relations = {}
+const relationsTypes = {
+  oneToMany: {},
+  manyToMany: {},
+  manyToOne: {}
+}
+
 const { getModel } = require('./models')
 
 const relationsType = {
@@ -16,11 +23,11 @@ function formatSingle (uuid) {
 }
 
 function formatBody (modelName, body) {
-  const relations = formatRelations(modelName)
+  const relation = formatRelationByModelName(modelName)
 
   for (const key in body) {
-    if (relations[key]) {
-      body[key] = relationsType[relations[key].type](body[key])
+    if (relation[key]) {
+      body[key] = relationsType[relation[key].type](body[key])
     }
   }
 
@@ -79,19 +86,94 @@ function formatRelations (name) {
   const formatted = {}
   const relations = {
     manyToMany: { type: 'many-to-many', joinTable: true, cascade: true },
-    oneToOne: { type: 'one-to-one', joinColumn: true },
+    oneToOne: { type: 'one-to-one' },
     manyToOne: { type: 'many-to-one', joinColumn: true },
-    oneToMany: { type: 'one-to-many' }
+    oneToMany: { type: 'one-to-many', inverseSide: 'companies_domains', joinColumn: true }
   }
 
   for (const key in getReleationsByModelName(name)) {
+    const relation = getReleationsByModelName(name)
+
     formatted[key] = { ...relations[getReleationsByModelName(name)[key].__relation_type], target: key }
   }
 
   return formatted
 }
 
+function formatRelationByModelName (name) {
+  const relation = {}
+
+  const types = {
+    manyToMany: { type: 'many-to-many', joinTable: true, cascade: true },
+    manyToOne: { type: 'many-to-one', joinColumn: true },
+    oneToMany: { type: 'one-to-many' }
+  }
+
+  for (const key in relationsTypes) {
+    if (Object.keys(relationsTypes[key]).length && relationsTypes[key][name]) {
+      relationsTypes[key][name].forEach(item => {
+        relation[item] = {
+          ...types[key], target: item, inverseSide: key === 'oneToMany' ? name : undefined
+        }
+      })
+    }
+  }
+
+  return relation
+}
+
+function getRelations (name) {
+  const { models } = require('./models')
+
+  for (const key in models) {
+    const model = models[key]
+
+    relations[key] = getReleationsByModelName(key)
+  }
+
+  for (const key in relations) {
+    if (Object.keys(relations[key]).length) {
+      for (const relationKey in relations[key]) {
+        const model = relations[key][relationKey].multiple ? 'manyToMany' : 'manyToOne'
+
+        relationsTypes[model][key] = [
+          relationKey,
+          ...(relationsTypes[model][key] || [])
+        ]
+        // relationsTypes[relations[key][relationKey].__relation_type][key] = [
+        //   relationKey,
+        //   ...(relationsTypes[relations[key][relationKey].__relation_type][key] || [])
+        // ]
+
+        relationsTypes['oneToMany'][relationKey] = [
+          key,
+          ...(relationsTypes['oneToMany'][relationKey] || [])
+        ]
+
+        // if (relations[key][relationKey].__relation_type === 'oneToMany') {
+        //   relationsTypes['manyToOne'][relationKey] = [
+        //     key,
+        //     ...(relationsTypes['manyToOne'][relationKey] || [])
+        //   ]
+
+        //   continue
+        // }
+
+        // if (relations[key][relationKey].__relation_type === 'manyToOne') {
+        //   relationsTypes['oneToMany'][relationKey] = [
+        //     key,
+        //     ...(relationsTypes['oneToMany'][relationKey] || [])
+        //   ]
+        // }
+      }
+    }
+  }
+}
+
 module.exports = {
+  relations,
+  formatRelationByModelName,
+  getRelations,
   formatBody,
   getReleationsByModelName,
   formatRelations,

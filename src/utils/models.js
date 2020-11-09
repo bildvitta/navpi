@@ -10,7 +10,7 @@ function getModel (name) {
 
 function getEntityByModelName (name) {
   const { getDatabaseTypeByField } = require('./fieldsDatabaseTypes')
-  const { getFieldsWithNoRelationByName, formatRelations } = require('./relations')
+  const { getFieldsWithNoRelationByName, formatRelations, formatRelationByModelName } = require('./relations')
 
   const fields = getFieldsWithNoRelationByName(name)
 
@@ -33,11 +33,12 @@ function getEntityByModelName (name) {
   return {
     name,
     columns,
-    relations: formatRelations(name)
+    relations: formatRelationByModelName(name)
   }
 }
 
 function loadModels ({ filesystem }) {
+  const { getRelations } = require('./relations')
   const modelsDirectory = 'models'
   let files = []
 
@@ -65,6 +66,8 @@ function loadModels ({ filesystem }) {
 
     addModel(name, contents)
   }
+
+  getRelations()
 
   return models
 }
