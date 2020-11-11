@@ -68,7 +68,8 @@ function formatFieldsOptions (modelName, options) {
 function formatOptions (model, options) {
   return options.map(option => ({
     label: option[model],
-    value: option['uuid']
+    value: option['uuid'],
+    data: option
   }))
 }
 
