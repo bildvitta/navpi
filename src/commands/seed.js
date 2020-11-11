@@ -52,7 +52,6 @@ module.exports = {
         spinner.succeed(`${modelName} was seeded.`)
       } catch (error) {
         spinner.fail(`Error seeding ${modelName}.`)
-        throw new Error(error)
       }
     }
 
