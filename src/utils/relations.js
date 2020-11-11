@@ -15,11 +15,11 @@ const relationsType = {
 }
 
 function formatList (list) {
-  return list.map(item => { return { uuid: item } })
+  return list.map(item => ({ uuid: item }))
 }
 
 function formatSingle (uuid) {
-  return uuid ? { uuid } : uuid
+  return uuid ? { uuid } : null
 }
 
 function formatBody (modelName, body) {
@@ -95,7 +95,9 @@ function formatRelationByModelName (name) {
     if (Object.keys(relationsTypes[key]).length && relationsTypes[key][name]) {
       relationsTypes[key][name].forEach(item => {
         relation[item] = {
-          ...types[key], target: item, inverseSide: key === 'oneToMany' ? name : undefined
+          ...types[key],
+          target: item,
+          inverseSide: key === 'oneToMany' ? name : undefined
         }
       })
     }
@@ -114,8 +116,10 @@ function getRelations (name) {
   }
 
   for (const key in relations) {
-    if (Object.keys(relations[key]).length) {
-      for (const relationKey in relations[key]) {
+    const relationsKey = relations[key]
+
+    if (Object.keys(relationsKey).length) {
+      for (const relationKey in relationsKey) {
         const isMultiple = relations[key][relationKey].multiple
         const model = isMultiple ? 'manyToMany' : 'manyToOne'
 

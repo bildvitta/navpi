@@ -66,12 +66,10 @@ function formatFieldsOptions (modelName, options) {
 }
 
 function formatOptions (model, options) {
-  return options.map(option => {
-    return {
-      label: option[model],
-      value: option['uuid']
-    }
-  })
+  return options.map(option => ({
+    label: option[model],
+    value: option['uuid']
+  }))
 }
 
 function formatResult (modelName, result) {
@@ -79,13 +77,13 @@ function formatResult (modelName, result) {
   const relationFields = getReleationsByModelName(modelName)
 
   for (const key in result) {
-    if (relationFields[key] && result[key]) {
-      if (relationFields[key].type === 'select' && !relationFields[key].multiple) {
-        result[key] = result[key].uuid
-        continue
-      }
+    const fieldsKey = relationFields[key]
+    const resultKey = result[key]
 
-      result[key] = result[key].map(item => item.uuid)
+    if (fieldsKey && resultKey) {
+      result[key] = fieldsKey.type === 'select' && !fieldsKey.multiple
+        ? resultKey.uuid
+        : resultKey.map(item => item.uuid)
     }
   }
 }

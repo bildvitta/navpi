@@ -81,7 +81,7 @@ module.exports = function (model, fields) {
       }
 
       const itemRepository = getRepository(model)
-      const item = itemRepository.create({ ...formatBody(model, body) })
+      const item = itemRepository.create(formatBody(model, body))
       await itemRepository.save(item)
 
       response.json(status(200, 'Created'))

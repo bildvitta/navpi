@@ -51,8 +51,8 @@ module.exports = {
         await seed(model, getValues(model))
         spinner.succeed(`${modelName} was seeded.`)
       } catch (error) {
-        throw new Error(error)
         spinner.fail(`Error seeding ${modelName}.`)
+        throw new Error(error)
       }
     }
 
