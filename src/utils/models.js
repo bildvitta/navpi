@@ -60,9 +60,8 @@ function loadModels ({ filesystem }) {
     const [name, extension] = path.replace(`${modelsDirectory}/`, '').split('.')
 
     const contents = ['yaml', 'yml'].includes(extension)
-
-    ? YAML.parse(filesystem.read(path))
-    : extension === 'js' ? require(path) : filesystem.read(path, 'json')
+      ? YAML.parse(filesystem.read(path))
+      : extension === 'js' ? require(path) : filesystem.read(path, 'json')
 
     addModel(name, contents)
   }
