@@ -9,11 +9,12 @@ const seederTypes = {
   email: '{{internet.email}}',
   money: '{{commerce.price}}',
   number: '{{random.number}}',
+  password: '{{internet.password}}',
   percent: '{{random.float}}',
-  radio: '{{random.word}}',
-  select: '{{random.sentence}}',
+  radio: '{{lorem.word}}',
+  select: '{{lorem.sentence}}',
   text: '{{lorem.sentence}}',
-  textarea: '{{random.sentences}}',
+  textarea: '{{lorem.sentences}}',
   time: '{{time.recent}}',
   upload: '{{image.image}}'
 }

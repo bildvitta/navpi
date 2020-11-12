@@ -13,15 +13,18 @@ module.exports = {
 
     const getConnection = require('../utils/connection')
     const { connection, models } = await getConnection(toolbox)
+    const { getFieldsWithNoRelationByName } = require('../utils/relations')
 
     function getValue (model) {
-      fields = models[model].fields
+      const fields = getFieldsWithNoRelationByName(model)
 
       const value = {}
 
       for (const key in fields) {
         value[key] = seeder(
-          seeder(fields[key].__value || seederTypes[fields[key].type])
+          fields[key].__random_values && Array.isArray(fields[key].__random_values)
+            ? fields[key].__random_values[Math.floor(Math.random() * fields[key].__random_values.length)]
+            : fields[key].__value || seederTypes[fields[key].type]
         )
       }
 

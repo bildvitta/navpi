@@ -10,7 +10,9 @@ function getModel (name) {
 
 function getEntityByModelName (name) {
   const { getDatabaseTypeByField } = require('./fieldsDatabaseTypes')
-  const { fields } = models[name]
+  const { getFieldsWithNoRelationByName, formatRelationByModelName } = require('./relations')
+
+  const fields = getFieldsWithNoRelationByName(name)
 
   const columns = {
     uuid: { generated: 'uuid', primary: true, type: 'varchar' }
@@ -30,11 +32,13 @@ function getEntityByModelName (name) {
 
   return {
     name,
-    columns
+    columns,
+    relations: formatRelationByModelName(name)
   }
 }
 
 function loadModels ({ filesystem }) {
+  const { getRelations } = require('./relations')
   const modelsDirectory = 'models'
   let files = []
 
@@ -61,6 +65,8 @@ function loadModels ({ filesystem }) {
 
     addModel(name, contents)
   }
+
+  getRelations()
 
   return models
 }

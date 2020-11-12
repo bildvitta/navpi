@@ -1,3 +1,5 @@
+const relations = require('./relations')
+
 function notFound (response) {
   return response.status(404).json(status(404, 'Not found'))
 }
@@ -9,6 +11,7 @@ function status (code, text) {
 module.exports = function (model, fields) {
   const { createQueryBuilder } = require('typeorm')
   const { onSuccessResponse, onErrorResponse } = require('./formatResponse')
+  const { getReleationsByModelName } = require('./relations')
 
   return {
     async index (request, response) {
@@ -28,16 +31,25 @@ module.exports = function (model, fields) {
         return response.json(onSuccessResponse(model, { request, results: [], count: 0 }))
       }
 
-      const queryBuilder = createQueryBuilder(model).where(formatFilter)
+      const { getRepository } = require('typeorm')
+      const { getRelationsListAndOptions } = require('../utils/relations')
+      const { options, relations } = await getRelationsListAndOptions(model)
 
-      const count = await queryBuilder.getCount()
-      const results = await queryBuilder.skip(offset).take(limit).getMany()
+      const [results, count] = await getRepository(model).findAndCount({
+        relations,
+        where: formatFilter,
+        skip: offset,
+        take: limit
+      })
 
-      response.json(onSuccessResponse(model, { request, results, count }))
+      response.json(onSuccessResponse(model, { request, results, count, options }))
     },
 
     async options (request, response) {
-      return response.json(onSuccessResponse(model, { request }))
+      const { getRelationsListAndOptions } = require('../utils/relations')
+      const { options, relations } = await getRelationsListAndOptions(model)
+
+      return response.json(onSuccessResponse(model, { request, options }))
     },
 
     async show (request, response) {
@@ -45,30 +57,32 @@ module.exports = function (model, fields) {
         params: { uuid }
       } = request
 
-      const result = await createQueryBuilder(model)
-        .where(`${model}.uuid = :uuid`, { uuid })
-        .getOne()
+      const { getRepository } = require('typeorm')
+      const fieldsWithRelations = getReleationsByModelName(model)
+      const { getRelationsListAndOptions } = require('../utils/relations')
+      const { options, relations } = await getRelationsListAndOptions(model)
+
+      const result = await getRepository(model).findOne({ where: { uuid }, relations })
 
       result
-        ? response.json(onSuccessResponse(model, { request, result }))
+        ? response.json(onSuccessResponse(model, { request, result, options }))
         : notFound(response)
     },
 
     async create (request, response) {
       const { body } = request
-
+      const { getRepository } = require('typeorm')
       const { validationResult } = require('express-validator')
+      const { formatBody, getRelationsListAndOptions } = require('../utils/relations')
       const errors = validationResult(request)
 
       if (!errors.isEmpty()) {
         return response.status(400).json(onErrorResponse(errors.array()))
       }
 
-      await createQueryBuilder()
-        .insert()
-        .into(model)
-        .values(body)
-        .execute()
+      const itemRepository = getRepository(model)
+      const item = itemRepository.create(formatBody(model, body))
+      await itemRepository.save(item)
 
       response.json(status(200, 'Created'))
     },
@@ -80,9 +94,11 @@ module.exports = function (model, fields) {
       } = request
 
       const { getRepository } = require('typeorm')
-
+      const { formatBody, getRelationsListAndOptions } = require('../utils/relations')
+      const { relations, options } = getRelationsListAndOptions(model)
       const itemRepository = getRepository(model)
-      let item = await itemRepository.findOne(uuid)
+
+      let item = await itemRepository.findOne({ where: { uuid }, relations, options })
 
       if (!item) {
         return notFound(response)
@@ -95,7 +111,7 @@ module.exports = function (model, fields) {
         return response.status(400).json(onErrorResponse(errors.array()))
       }
 
-      item = { ...body }
+      item = { ...formatBody(model, body) }
 
       await itemRepository.save(item)
 
@@ -118,7 +134,10 @@ module.exports = function (model, fields) {
     },
 
     async filters (request, response) {
-      return response.json(onSuccessResponse(model, { request }, false))
+      const { getRelationsListAndOptions } = require('../utils/relations')
+      const { options, relations } = await getRelationsListAndOptions(model)
+
+      return response.json(onSuccessResponse(model, { request, options }, false))
     }
   }
 }
