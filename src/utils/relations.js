@@ -118,22 +118,24 @@ function getRelations (name) {
   for (const key in relations) {
     const relationsKey = relations[key]
 
-    if (Object.keys(relationsKey).length) {
-      for (const relationKey in relationsKey) {
-        const isMultiple = relations[key][relationKey].multiple
-        const model = isMultiple ? 'manyToMany' : 'manyToOne'
+    if (!Object.keys(relationsKey).length) {
+      continue
+    }
 
-        relationsTypes[model][key] = [
-          relationKey,
-          ...(relationsTypes[model][key] || [])
+    for (const relationKey in relationsKey) {
+      const isMultiple = relations[key][relationKey].multiple
+      const model = isMultiple ? 'manyToMany' : 'manyToOne'
+
+      relationsTypes[model][key] = [
+        relationKey,
+        ...(relationsTypes[model][key] || [])
+      ]
+
+      if (!isMultiple) {
+        relationsTypes['oneToMany'][relationKey] = [
+          key,
+          ...(relationsTypes['oneToMany'][relationKey] || [])
         ]
-
-        if (!isMultiple) {
-          relationsTypes['oneToMany'][relationKey] = [
-            key,
-            ...(relationsTypes['oneToMany'][relationKey] || [])
-          ]
-        }
       }
     }
   }
