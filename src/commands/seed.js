@@ -39,12 +39,12 @@ module.exports = {
       return Array(entries).fill().map(entry => getValue(model))
     }
 
-    function seed (model, values) {
+    async function seed (model, values) {
       const fields = getFieldsWithNoRelationByName(model)
       const chunks = chunk(values, bufferSize / Object.keys(fields).length)
 
       for (const valueChunk of chunks) {
-        connection
+        await connection
           .createQueryBuilder().insert()
           .into(model).values(valueChunk)
           .execute()
