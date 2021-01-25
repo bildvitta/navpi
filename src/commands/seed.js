@@ -1,3 +1,6 @@
+const { chunk } = require('lodash')
+const bufferSize = 1000
+
 module.exports = {
   name: 'seed',
 
@@ -36,11 +39,16 @@ module.exports = {
       return Array(entries).fill().map(entry => getValue(model))
     }
 
-    function seed (model, values) {
-      return connection
-        .createQueryBuilder().insert()
-        .into(model).values(values)
-        .execute()
+    async function seed (model, values) {
+      const fields = getFieldsWithNoRelationByName(model)
+      const chunks = chunk(values, bufferSize / Object.keys(fields).length)
+
+      for (const valueChunk of chunks) {
+        await connection
+          .createQueryBuilder().insert()
+          .into(model).values(valueChunk)
+          .execute()
+      }
     }
 
     for (const model in models) {
