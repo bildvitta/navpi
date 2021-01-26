@@ -15,7 +15,7 @@
     "gluegun": "latest",
     "lodash": "^4.17.20",
     "reflect-metadata": "^0.1.13",
-    "sqlite3": "^5.0.0",
+    "sqlite3": "5.0.0",
     "typeorm": "^0.2.30",
     "yaml": "^1.10.0"
   }
