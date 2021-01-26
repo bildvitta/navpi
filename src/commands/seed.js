@@ -1,5 +1,5 @@
 const { chunk } = require('lodash')
-const bufferSize = 1000
+const bufferSize = 900
 
 module.exports = {
   name: 'seed',
