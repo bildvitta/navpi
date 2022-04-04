@@ -153,9 +153,19 @@ function filterPrivatesInObject (object) {
   return fields
 }
 
+function formatSubmitSuccess (result) {
+  return {
+    result,
+    status: {
+      code: 200
+    }
+  }
+}
+
 module.exports = {
-  onSuccessResponse,
-  onErrorResponse,
   formatResult,
-  formatResults
+  formatResults,
+  onErrorResponse,
+  onSuccessResponse,
+  formatSubmitSuccess
 }
