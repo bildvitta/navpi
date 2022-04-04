@@ -8,7 +8,7 @@ function status (code, text) {
 
 module.exports = function (model) {
   const { createQueryBuilder } = require('typeorm')
-  const { onSuccessResponse, onErrorResponse, onSuccessSubmit } = require('./formatResponse')
+  const { onSuccessResponse, onErrorResponse, formatSubmitSuccess } = require('./formatResponse')
 
   return {
     async index (request, response) {
@@ -80,7 +80,7 @@ module.exports = function (model) {
       const item = itemRepository.create(formatBody(model, body))
       await itemRepository.save(item)
 
-      response.json(onSuccessSubmit(item))
+      response.json(formatSubmitSuccess(item))
     },
 
     async update (request, response) {
@@ -111,7 +111,7 @@ module.exports = function (model) {
 
       await itemRepository.save(item)
 
-      response.json(onSuccessSubmit(item))
+      response.json(formatSubmitSuccess(item))
     },
 
     async destroy (request, response) {
