@@ -118,10 +118,11 @@ module.exports = function (model) {
       const {
         params: { uuid }
       } = request
-
+      
       const query = await createQueryBuilder(model)
         .delete()
-        .where(`${model}.uuid = :uuid`, { uuid })
+        .from(model)
+        .where(`uuid = :uuid`, { uuid })
         .execute()
 
       query
